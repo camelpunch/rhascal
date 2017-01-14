@@ -15,14 +15,17 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib
+  exposed-modules:     Model
+                     , Combat
+  ghc-options:         -Wall -Werror
   build-depends:       base >= 4.7 && < 5
+                     , random
   default-language:    Haskell2010
 
 executable rhascal-exe
   hs-source-dirs:      app
   main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
   build-depends:       base
                      , rhascal
   default-language:    Haskell2010
@@ -33,6 +36,9 @@ test-suite rhascal-test
   main-is:             Spec.hs
   build-depends:       base
                      , rhascal
+                     , QuickCheck
+                     , hspec
+                     , random
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 

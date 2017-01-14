@@ -1,6 +1,13 @@
 module Main where
 
-import Lib
+import Model
 
 main :: IO ()
-main = someFunc
+main =
+    print
+        Character
+        { piece = Piece '@'
+        , coords = Point (0, 0)
+        , hitPoints = HitPoints 12
+        , armourClass = ArmourClass 12
+        }
