@@ -1,36 +1,45 @@
-import Test.Hspec
+{-# LANGUAGE TemplateHaskell #-}
+
 import Test.QuickCheck
 
+import Data.List
+import System.Exit
 import System.Random
 
 import Combat
 import Model
 
-instance Arbitrary Character where
-    arbitrary = do
-        Positive hp <- arbitrary
-        Positive ac <- arbitrary
-        c <- arbitrary
-        Positive x <- arbitrary
-        Positive y <- arbitrary
-        return $
-            Character
-            { hitPoints = HitPoints hp
-            , armourClass = ArmourClass ac
-            , piece = Piece c
-            , coords = Point (x, y)
-            }
+import ArbitraryTypes
+
+-- Dice
+prop_RollIsDifferentForDifferentSeeds = nub rolls /= rolls
+  where
+    rolls = map (roll 20 . mkStdGen) [1 .. 1000]
+
+prop_RollIsBetween1AndNumberOfSides seed (Positive sides) =
+    roll sides (mkStdGen seed) `elem` [1 .. sides]
+
+-- Combat
+prop_1IsAMiss x = landing 1 x === Miss
+
+prop_20LandsCriticalHit x = landing 20 x === CriticalHit
+
+prop_2To19IsAHitIfGreaterThanOrEqualToTargetArmourClass x =
+    forAll (choose (2, 19)) $ \n ->
+        ArmourClass n >= armourClass x ==> landing n x === Hit
+
+prop_2To19IsAMissIfLessThanTargetArmourClass x =
+    forAll (choose (2, 19)) $ \n ->
+        ArmourClass n < armourClass x ==> landing n x === Miss
+
+prop_21PlusIsInvalid x =
+    forAll (choose (21, 10000)) $ \n -> landing n x === Invalid
+
+return []
 
 main :: IO ()
-main =
-    hspec $ do
-        describe "attack rolls" $ do
-            specify "1 is a miss" $ property $ \x -> landing 1 x == Miss
-            specify "20 lands a critical hit" $ property $ \x ->
-                landing 20 x == CriticalHit
-            specify "2-19 when >= target's armour class lands a hit" $
-                forAll (choose (2, 19)) $ \n x ->
-                ArmourClass n >= armourClass x ==> landing n x == Hit
-            specify "2-19 when < target's armour class is a miss" $
-                forAll (choose (2, 19)) $ \n x ->
-                ArmourClass n < armourClass x ==> landing n x == Miss
+main = do
+    result <- $quickCheckAll
+    case result of
+        True -> exitSuccess
+        False -> exitFailure
