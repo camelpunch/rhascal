@@ -7,7 +7,7 @@ license:             BSD3
 license-file:        LICENSE
 author:              Andrew Bruce
 maintainer:          me@andrewbruce.net
-copyright:           2016 Andrew Bruce
+copyright:           2017 Andrew Bruce
 category:            Web
 build-type:          Simple
 extra-source-files:  README.md
