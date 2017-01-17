@@ -19,6 +19,8 @@ instance Die RiggedDie where
 
 unusedDie = RiggedDie []
 
+arbitraryDie rolls = RiggedDie $ map getPositive rolls
+
 -- Dice
 prop_d4WithinRange seed n = all (`elem` [1 .. 4]) rolls
   where
@@ -51,10 +53,7 @@ prop_HitCausesDamage x =
     hitPoints (damage die Hit x) === HitPoints (initial - 10)
   where
     HitPoints initial = hitPoints x
-    die = RiggedDie [10, 0]
-
-prop_NoChangeWhenDieNotRolled x =
-    hitPoints (damage unusedDie Hit x) === hitPoints x
+    die = RiggedDie [10, 1]
 
 prop_CriticalHitCausesTwoRollsOfDamage x =
     hitPoints (damage die CriticalHit x) === HitPoints (initial - 15)
@@ -62,10 +61,13 @@ prop_CriticalHitCausesTwoRollsOfDamage x =
     HitPoints initial = hitPoints x
     die = RiggedDie [5, 10, 999]
 
-prop_MissCausesNoDamage x = hitPoints (damage unusedDie Miss x) === hitPoints x
+prop_NoDamageOnMissOrInvalid x rolls =
+    forAll (elements [Miss, Invalid]) $ \l ->
+        hitPoints (damage (arbitraryDie rolls) l x) === hitPoints x
 
-prop_InvalidCausesNoDamage x =
-    hitPoints (damage unusedDie Invalid x) === hitPoints x
+prop_NoDamageWhenDieNotRolled x =
+    forAll (elements [Hit, CriticalHit]) $ \l ->
+        hitPoints (damage unusedDie l x) === hitPoints x
 
 return []
 
