@@ -3,12 +3,32 @@
 import Test.QuickCheck
 
 import Data.List
-import System.Exit
+import System.Exit hiding (die)
 import System.Random
 
 import Combat
 
 import ArbitraryTypes
+import Dice
+
+newtype RiggedDie =
+    RiggedDie [Roll]
+
+instance Die RiggedDie where
+    rollsOf (RiggedDie ns) = ns
+
+unusedDie = RiggedDie []
+
+-- Dice
+prop_d4WithinRange seed n = all (`elem` [1 .. 4]) rolls
+  where
+    g = mkStdGen seed
+    rolls = take n $ rollsOf (D4 g)
+
+prop_d20WithinRange seed n = all (`elem` [1 .. 20]) rolls
+  where
+    g = mkStdGen seed
+    rolls = take n $ rollsOf (D20 g)
 
 -- Combat: deciding whether we hit
 prop_1IsAMiss x = landing 1 x === Miss
@@ -28,27 +48,24 @@ prop_21PlusIsInvalid x =
 
 -- Combat: damaging a character
 prop_HitCausesDamage x =
-    hitPoints (damage g Hit x) === HitPoints (initial - roll)
+    hitPoints (damage die Hit x) === HitPoints (initial - 10)
   where
     HitPoints initial = hitPoints x
-    g = mkStdGen 123
-    (roll, _) = randomR (1, 4) g
+    die = RiggedDie [10, 0]
+
+prop_NoChangeWhenDieNotRolled x =
+    hitPoints (damage unusedDie Hit x) === hitPoints x
 
 prop_CriticalHitCausesTwoRollsOfDamage x =
-    hitPoints (damage g CriticalHit x) === HitPoints (initial - roll1 + roll2)
+    hitPoints (damage die CriticalHit x) === HitPoints (initial - 15)
   where
-    g = mkStdGen 1
     HitPoints initial = hitPoints x
-    (roll1, g') = randomR (1, 4) g
-    (roll2, _) = randomR (1, 4) g'
+    die = RiggedDie [5, 10, 999]
 
-prop_MissCausesNoDamage x = hitPoints (damage g Miss x) === hitPoints x
-  where
-    g = mkStdGen 10
+prop_MissCausesNoDamage x = hitPoints (damage unusedDie Miss x) === hitPoints x
 
-prop_InvalidCausesNoDamage x = hitPoints (damage g Invalid x) === hitPoints x
-  where
-    g = mkStdGen 999
+prop_InvalidCausesNoDamage x =
+    hitPoints (damage unusedDie Invalid x) === hitPoints x
 
 return []
 
