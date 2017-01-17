@@ -86,6 +86,6 @@ return []
 main :: IO ()
 main = do
     result <- $quickCheckAll
-    case result of
-        True -> exitSuccess
-        False -> exitFailure
+    if result
+        then exitSuccess
+        else exitFailure
