@@ -1,8 +1,8 @@
 module Combat
-    ( landing
+    ( combatAction
     , damage
     , Roll
-    , Landing(..)
+    , CombatAction(..)
     , Defender
     , module Model
     ) where
@@ -12,24 +12,24 @@ import Model
 
 type Defender = Character
 
-data Landing
+data CombatAction
     = Hit
     | CriticalHit
     | Miss
     | Invalid
     deriving (Eq, Show)
 
-landing :: Roll -> Defender -> Landing
-landing 1 _ = Miss
-landing 20 _ = CriticalHit
-landing n x
+combatAction :: Roll -> Defender -> CombatAction
+combatAction 1 _ = Miss
+combatAction 20 _ = CriticalHit
+combatAction n x
     | n > 20 = Invalid
     | ArmourClass n >= armourClass x = Hit
     | otherwise = Miss
 
 damage
     :: Die a
-    => a -> Landing -> Defender -> Defender
+    => a -> CombatAction -> Defender -> Defender
 damage die l x =
     x
     { hitPoints =
