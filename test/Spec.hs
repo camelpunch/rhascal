@@ -84,13 +84,17 @@ prop_NoDamageWhenDieNotRolled x =
 -- Combat: battle between two characters
 prop_DefenderIsDamagedWhenAttackerHits :: Attacker -> Defender -> Property
 prop_DefenderIsDamagedWhenAttackerHits attacker defender =
+    forAllAttackAndDamageRolls $ \attackRoll damageRoll ->
+        let die = RiggedDie [attackRoll, damageRoll]
+            [_, defenderAfter] = battle die [attacker, defender]
+        in ArmourClass attackRoll >= armourClass defender ==>
+           hitPoints defenderAfter <
+           hitPoints defender
+
+forAllAttackAndDamageRolls :: (Int -> Int -> Property) -> Property
+forAllAttackAndDamageRolls f =
     forAll (choose (2, 19)) $ \attackRoll ->
-        forAll (choose (1, 4)) $ \damageRoll ->
-            let die = RiggedDie [attackRoll, damageRoll]
-                [_, defenderAfter] = battle die [attacker, defender]
-            in ArmourClass attackRoll >= armourClass defender ==>
-               hitPoints defenderAfter <
-               hitPoints defender
+        forAll (choose (1, 4)) $ \damageRoll -> f attackRoll damageRoll
 
 prop_DefenderCountersWhenAttackerMisses :: Attacker
                                         -> Defender
