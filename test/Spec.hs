@@ -44,12 +44,12 @@ prop_20LandsCriticalHit x = combatAction 20 x === CriticalHit
 
 prop_2To19IsAHitIfGreaterThanOrEqualToTargetArmourClass :: Defender -> Property
 prop_2To19IsAHitIfGreaterThanOrEqualToTargetArmourClass x =
-    forAll (choose (2, 19)) $ \n ->
+    forAllAttackRolls $ \n ->
         ArmourClass n >= armourClass x ==> combatAction n x === Hit
 
 prop_2To19IsAMissIfLessThanTargetArmourClass :: Defender -> Property
 prop_2To19IsAMissIfLessThanTargetArmourClass x =
-    forAll (choose (2, 19)) $ \n ->
+    forAllAttackRolls $ \n ->
         ArmourClass n < armourClass x ==> combatAction n x === Miss
 
 prop_21PlusIsInvalid :: Defender -> Property
@@ -93,8 +93,13 @@ prop_DefenderIsDamagedWhenAttackerHits attacker defender =
 
 forAllAttackAndDamageRolls :: (Int -> Int -> Property) -> Property
 forAllAttackAndDamageRolls f =
-    forAll (choose (2, 19)) $ \attackRoll ->
-        forAll (choose (1, 4)) $ \damageRoll -> f attackRoll damageRoll
+    forAllAttackRolls $ \x -> forAllDamageRolls $ \y -> f x y
+
+forAllAttackRolls :: (Int -> Property) -> Property
+forAllAttackRolls = forAll (choose (2, 19))
+
+forAllDamageRolls :: (Int -> Property) -> Property
+forAllDamageRolls = forAll (choose (1, 4))
 
 prop_DefenderCountersWhenAttackerMisses :: Attacker
                                         -> Defender
