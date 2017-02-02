@@ -81,6 +81,27 @@ prop_NoDamageWhenDieNotRolled x =
     forAll (elements [Hit, CriticalHit]) $ \l ->
         hitPoints (damage unusedDie l x) === hitPoints x
 
+-- Combat: battle between two characters
+prop_DefenderIsDamagedWhenAttackerHits :: Attacker -> Defender -> Property
+prop_DefenderIsDamagedWhenAttackerHits attacker defender =
+    forAll (choose (2, 19)) $ \attackRoll ->
+        forAll (choose (1, 4)) $ \damageRoll ->
+            let die = RiggedDie [attackRoll, damageRoll]
+                [_, defenderAfter] = battle die [attacker, defender]
+            in ArmourClass attackRoll >= armourClass defender ==>
+               hitPoints defenderAfter <
+               hitPoints defender
+
+prop_DefenderCountersWhenAttackerMisses :: Attacker
+                                        -> Defender
+                                        -> [Positive Roll]
+                                        -> Property
+prop_DefenderCountersWhenAttackerMisses attacker defender extraRolls =
+    property $ hitPoints attackerAfter < hitPoints attacker
+  where
+    die = RiggedDie ([1, 2] ++ (map getPositive extraRolls))
+    [attackerAfter, _] = battle die [attacker, defender]
+
 return []
 
 main :: IO ()

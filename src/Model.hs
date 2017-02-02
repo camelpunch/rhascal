@@ -4,6 +4,7 @@ module Model
     , HitPoints(..)
     , Piece(..)
     , Point(..)
+    , Board
     ) where
 
 newtype Piece =
@@ -12,7 +13,7 @@ newtype Piece =
 
 newtype HitPoints =
     HitPoints Int
-    deriving (Eq, Show)
+    deriving (Eq, Show, Ord)
 
 newtype ArmourClass =
     ArmourClass Int
@@ -28,3 +29,5 @@ data Character = Character
     , armourClass :: ArmourClass
     , coords :: Point
     } deriving (Eq, Show)
+
+type Board a = [[a]]
