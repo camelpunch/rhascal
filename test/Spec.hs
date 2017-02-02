@@ -44,12 +44,12 @@ prop_20LandsCriticalHit x = combatAction 20 x === CriticalHit
 
 prop_2To19IsAHitIfGreaterThanOrEqualToTargetArmourClass :: Defender -> Property
 prop_2To19IsAHitIfGreaterThanOrEqualToTargetArmourClass x =
-    forAllAttackRolls $ \n ->
+    forAll attackRolls $ \n ->
         ArmourClass n >= armourClass x ==> combatAction n x === Hit
 
 prop_2To19IsAMissIfLessThanTargetArmourClass :: Defender -> Property
 prop_2To19IsAMissIfLessThanTargetArmourClass x =
-    forAllAttackRolls $ \n ->
+    forAll attackRolls $ \n ->
         ArmourClass n < armourClass x ==> combatAction n x === Miss
 
 prop_21PlusIsInvalid :: Defender -> Property
@@ -84,22 +84,23 @@ prop_NoDamageWhenDieNotRolled x =
 -- Combat: battle between two characters
 prop_DefenderIsDamagedWhenAttackerHits :: Attacker -> Defender -> Property
 prop_DefenderIsDamagedWhenAttackerHits attacker defender =
-    forAllAttackAndDamageRolls $ \attackRoll damageRoll ->
+    combine attackRolls damageRolls $ \attackRoll damageRoll ->
         let die = RiggedDie [attackRoll, damageRoll]
             [_, defenderAfter] = battle die [attacker, defender]
         in ArmourClass attackRoll >= armourClass defender ==>
            hitPoints defenderAfter <
            hitPoints defender
 
-forAllAttackAndDamageRolls :: (Int -> Int -> Property) -> Property
-forAllAttackAndDamageRolls f =
-    forAllAttackRolls $ \x -> forAllDamageRolls $ \y -> f x y
+combine
+    :: Show a
+    => Gen a -> Gen a -> (a -> a -> Property) -> Property
+combine x y f = forAll x $ \n -> forAll y $ \m -> f n m
 
-forAllAttackRolls :: (Int -> Property) -> Property
-forAllAttackRolls = forAll (choose (2, 19))
+attackRolls :: Gen Int
+attackRolls = choose (2, 19)
 
-forAllDamageRolls :: (Int -> Property) -> Property
-forAllDamageRolls = forAll (choose (1, 4))
+damageRolls :: Gen Int
+damageRolls = choose (1, 4)
 
 prop_DefenderCountersWhenAttackerMisses :: Attacker
                                         -> Defender
