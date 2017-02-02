@@ -11,7 +11,7 @@ instance Arbitrary Character where
         c <- arbitrary
         Positive x <- arbitrary
         Positive y <- arbitrary
-        return $
+        return
             Character
             { hitPoints = HitPoints hp
             , armourClass = ArmourClass ac

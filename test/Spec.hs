@@ -99,7 +99,7 @@ prop_DefenderCountersWhenAttackerMisses :: Attacker
 prop_DefenderCountersWhenAttackerMisses attacker defender extraRolls =
     property $ hitPoints attackerAfter < hitPoints attacker
   where
-    die = RiggedDie ([1, 2] ++ (map getPositive extraRolls))
+    die = RiggedDie ([1, 2] ++ map getPositive extraRolls)
     [attackerAfter, _] = battle die [attacker, defender]
 
 return []
