@@ -37,7 +37,7 @@ plot :: Point -> Point -> Tile
 plot playerPoint candidate =
     if playerPoint == candidate
         then Grass $ Just $ player playerPoint
-        else Wall
+        else Grass Nothing
 
 player :: Point -> Character
 player point =

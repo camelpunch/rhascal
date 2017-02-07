@@ -139,6 +139,20 @@ prop_FirstAndLastColumnsAreWall seed (Positive width) height =
     g = mkStdGen seed
     wall = replicate height Wall
 
+prop_NonPlayerTilesStartEmpty :: Int -> Positive Int -> Positive Int -> Property
+prop_NonPlayerTilesStartEmpty seed (Positive width) (Positive height) =
+    visibleBoard width height ==> length (emptyTiles board) === totalTiles - 1
+  where
+    emptyTiles (Board b) = filter isEmptyTile $ concat b
+    totalTiles = (width - 2) * (height - 2)
+    board = generateBoard g width height
+    g = mkStdGen seed
+    isEmptyTile tile =
+        case tile of
+            Grass Nothing -> True
+            Grass (Just _) -> False
+            Wall -> False
+
 prop_SinglePlayerSpawned :: Int -> Positive Int -> Positive Int -> Property
 prop_SinglePlayerSpawned seed (Positive width) (Positive height) =
     visibleBoard width height ==> countPlayers (concat board) === 1

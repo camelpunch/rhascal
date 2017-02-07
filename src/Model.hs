@@ -36,23 +36,14 @@ newtype Board =
 
 instance Show Board where
     show (Board board) =
-        foldl
-            (\output row ->
-                 output ++
-                 map
-                     (\tile ->
-                          case tile of
-                              Grass (Just character) ->
-                                  piece2char $ piece character
-                              Grass Nothing -> '.'
-                              Wall -> '#')
-                     row ++
-                 "\n")
-            ""
-            board
+        foldl (\output row -> output ++ map tile2char row ++ "\n") "" board
 
-piece2char :: Piece -> Char
-piece2char (Piece char) = char
+tile2char :: Tile -> Char
+tile2char Wall = '#'
+tile2char (Grass Nothing) = '.'
+tile2char (Grass (Just character)) = piece2char $ piece character
+  where
+    piece2char (Piece char) = char
 
 data Tile
     = Grass (Maybe Character)
