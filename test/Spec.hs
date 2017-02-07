@@ -1,23 +1,17 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-import Test.QuickCheck
-
 import System.Exit hiding (die)
 import System.Random
+
+import Test.QuickCheck
 
 import Combat
 import Dice
 
 import ArbitraryTypes ()
-
-newtype RiggedDie =
-    RiggedDie [Roll]
-
-instance Die RiggedDie where
-    rollsOf (RiggedDie ns) = ns
-
-arbitraryDie :: [Positive Roll] -> RiggedDie
-arbitraryDie rolls = RiggedDie $ map getPositive rolls
+import TestHelpers
+       (RiggedDie(..), combine, arbitraryDie, rollsOf, attackRolls,
+        damageRolls)
 
 -- Dice
 prop_d4WithinRange :: Int -> Int -> Bool
@@ -112,17 +106,6 @@ prop_TwoCountersWhenCriticalHitIsRolled attacker defender =
     attackDie = RiggedDie [missRoll, criticalHitRoll]
     damageDie = RiggedDie [counterDamage1, counterDamage2]
     [attackerAfter, _] = battle attackDie damageDie [attacker, defender]
-
-combine
-    :: Show a
-    => Gen a -> Gen a -> (a -> a -> Property) -> Property
-combine x y f = forAll x $ \n -> forAll y $ \m -> f n m
-
-attackRolls :: Gen Int
-attackRolls = choose (2, 19)
-
-damageRolls :: Gen Int
-damageRolls = choose (1, 4)
 
 return []
 
