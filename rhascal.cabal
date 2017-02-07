@@ -29,6 +29,7 @@ executable rhascal-exe
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
   build-depends:       base
                      , rhascal
+                     , ansi-terminal
   default-language:    Haskell2010
 
 test-suite rhascal-test
