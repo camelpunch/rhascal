@@ -106,7 +106,15 @@ prop_TwoCountersWhenCriticalHitIsRolled attacker defender =
     damageDie = RiggedDie [counterDamage1, counterDamage2]
     [attackerAfter, _] = battle attackDie damageDie [attacker, defender]
 
--- Display of board
+-- Board display
+prop_BoardShowsWithLineBreaks :: Int -> Positive Int -> Positive Int -> Property
+prop_BoardShowsWithLineBreaks seed (Positive width) (Positive height) =
+    visibleBoard width height ==> length (lines (show board)) === height
+  where
+    board = generateBoard g width height
+    g = mkStdGen seed
+
+-- Logical board
 prop_ZeroHeightBoardIsEmpty :: Int -> Int -> Property
 prop_ZeroHeightBoardIsEmpty seed width = board === []
   where

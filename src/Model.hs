@@ -44,7 +44,8 @@ instance Show Board where
                           case tile of
                               Grass character -> piece2char $ piece character
                               Wall -> '#')
-                     row)
+                     row ++
+                 "\n")
             ""
             board
 
