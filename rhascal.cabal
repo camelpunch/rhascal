@@ -31,6 +31,7 @@ executable rhascal-exe
   build-depends:       base
                      , rhascal
                      , ansi-terminal
+                     , random
   default-language:    Haskell2010
 
 test-suite rhascal-test

@@ -4,7 +4,7 @@ module Model
     , HitPoints(..)
     , Piece(..)
     , Point(..)
-    , Board
+    , Board(..)
     , Tile(..)
     ) where
 
@@ -31,7 +31,25 @@ data Character = Character
     , coords :: Point
     } deriving (Eq, Show)
 
-type Board = [[Tile]]
+newtype Board =
+    Board [[Tile]]
+
+instance Show Board where
+    show (Board board) =
+        foldl
+            (\output row ->
+                 output ++
+                 map
+                     (\tile ->
+                          case tile of
+                              Grass character -> piece2char $ piece character
+                              Wall -> '#')
+                     row)
+            ""
+            board
+
+piece2char :: Piece -> Char
+piece2char (Piece char) = char
 
 data Tile
     = Grass Character

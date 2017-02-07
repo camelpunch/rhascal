@@ -17,8 +17,8 @@ generateBoard g width height
                     y ++
                 [Wall]
             rows = map row [1 .. internal height]
-        in [horzWall width] ++ rows ++ [horzWall width]
-    | otherwise = replicate height $ replicate width Wall
+        in Board $ [horzWall width] ++ rows ++ [horzWall width]
+    | otherwise = Board $ replicate height $ replicate width Wall
 
 plotPlayer :: StdGen -> Int -> Int -> Point
 plotPlayer g width height = Point (playerX, playerY)

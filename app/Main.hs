@@ -1,22 +1,17 @@
 module Main where
 
 import System.Console.ANSI
+import System.Random
 
-import Model
+import Board
 
 main :: IO ()
 main = do
     showCursor
     clearScreen
     setCursorPosition 0 0
-    putStrLn $ replicate width '#'
-    print
-        Character
-        { piece = Piece '@'
-        , coords = Point (0, 0)
-        , hitPoints = HitPoints 12
-        , armourClass = ArmourClass 12
-        }
+    g <- getStdGen
+    print $ generateBoard g width height
 
 width :: Int
 width = 80

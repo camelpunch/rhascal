@@ -108,15 +108,16 @@ prop_TwoCountersWhenCriticalHitIsRolled attacker defender =
 
 -- Display of board
 prop_ZeroHeightBoardIsEmpty :: Int -> Int -> Property
-prop_ZeroHeightBoardIsEmpty seed width = generateBoard g width 0 === []
+prop_ZeroHeightBoardIsEmpty seed width = board === []
   where
+    Board board = generateBoard g width 0
     g = mkStdGen seed
 
 prop_FirstAndLastRowsAreWall :: Int -> Int -> (Positive Int) -> Property
 prop_FirstAndLastRowsAreWall seed width (Positive height) =
     head board === wall .&&. last board == wall
   where
-    board = generateBoard g width height
+    Board board = generateBoard g width height
     g = mkStdGen seed
     wall = replicate width Wall
 
@@ -126,7 +127,7 @@ prop_FirstAndLastColumnsAreWall seed (Positive width) height =
   where
     firstColumn = map head board
     lastColumn = map last board
-    board = generateBoard g width height
+    Board board = generateBoard g width height
     g = mkStdGen seed
     wall = replicate height Wall
 
@@ -134,7 +135,7 @@ prop_SinglePlayerSpawned :: Int -> (Positive Int) -> (Positive Int) -> Property
 prop_SinglePlayerSpawned seed (Positive width) (Positive height) =
     visibleBoard width height ==> countPlayers (concat board) === 1
   where
-    board = generateBoard g width height
+    Board board = generateBoard g width height
     g = mkStdGen seed
     countPlayers =
         length .
