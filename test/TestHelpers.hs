@@ -5,6 +5,7 @@ module TestHelpers
     , rollsOf
     , attackRolls
     , damageRolls
+    , visibleBoard
     ) where
 
 import Dice
@@ -32,3 +33,6 @@ attackRolls = choose (2, 19)
 
 damageRolls :: Gen Int
 damageRolls = choose (1, 4)
+
+visibleBoard :: Int -> Int -> Bool
+visibleBoard w h = w >= 3 && h >= 3

@@ -5,13 +5,12 @@ import System.Random
 
 import Test.QuickCheck
 
+import Board
 import Combat
 import Dice
 
 import ArbitraryTypes ()
 import TestHelpers
-       (RiggedDie(..), combine, arbitraryDie, rollsOf, attackRolls,
-        damageRolls)
 
 -- Dice
 prop_d4WithinRange :: Int -> Int -> Bool
@@ -107,6 +106,46 @@ prop_TwoCountersWhenCriticalHitIsRolled attacker defender =
     damageDie = RiggedDie [counterDamage1, counterDamage2]
     [attackerAfter, _] = battle attackDie damageDie [attacker, defender]
 
+-- Display of board
+prop_ZeroHeightBoardIsEmpty :: Int -> Int -> Property
+prop_ZeroHeightBoardIsEmpty seed width = generateBoard g width 0 === []
+  where
+    g = mkStdGen seed
+
+prop_FirstAndLastRowsAreWall :: Int -> Int -> (Positive Int) -> Property
+prop_FirstAndLastRowsAreWall seed width (Positive height) =
+    head board === wall .&&. last board == wall
+  where
+    board = generateBoard g width height
+    g = mkStdGen seed
+    wall = replicate width Wall
+
+prop_FirstAndLastColumnsAreWall :: Int -> (Positive Int) -> Int -> Property
+prop_FirstAndLastColumnsAreWall seed (Positive width) height =
+    firstColumn === wall .&&. lastColumn == wall
+  where
+    firstColumn = map head board
+    lastColumn = map last board
+    board = generateBoard g width height
+    g = mkStdGen seed
+    wall = replicate height Wall
+
+prop_SinglePlayerSpawned :: Int -> (Positive Int) -> (Positive Int) -> Property
+prop_SinglePlayerSpawned seed (Positive width) (Positive height) =
+    visibleBoard width height ==> countPlayers (concat board) === 1
+  where
+    board = generateBoard g width height
+    g = mkStdGen seed
+    countPlayers =
+        length .
+        filter
+            (\tile ->
+                 case tile of
+                     Wall -> False
+                     Grass char -> piece char == Piece '@')
+
+-- Manual Movement (usually a player)
+-- Automatic Movement (usually a monster)
 return []
 
 main :: IO ()

@@ -5,6 +5,7 @@ module Model
     , Piece(..)
     , Point(..)
     , Board
+    , Tile(..)
     ) where
 
 newtype Piece =
@@ -30,4 +31,9 @@ data Character = Character
     , coords :: Point
     } deriving (Eq, Show)
 
-type Board a = [[a]]
+type Board = [[Tile]]
+
+data Tile
+    = Grass Character
+    | Wall
+    deriving (Eq, Show)
