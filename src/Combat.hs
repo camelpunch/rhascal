@@ -2,6 +2,8 @@ module Combat
     ( battle
     , combatAction
     , damage
+    , missRoll
+    , criticalHitRoll
     , Roll
     , CombatAction(..)
     , Attacker
@@ -44,10 +46,10 @@ battleWithRolls attackRolls damageRolls (attacker:defender:_) =
 battleWithRolls _ _ battlers = battlers
 
 combatAction :: Roll -> Defender -> CombatAction
-combatAction 1 _ = Miss
-combatAction 20 _ = CriticalHit
 combatAction roll defender
-    | roll > 20 = Invalid
+    | roll == missRoll = Miss
+    | roll == criticalHitRoll = CriticalHit
+    | roll > criticalHitRoll = Invalid
     | ArmourClass roll >= armourClass defender = Hit
     | otherwise = Miss
 
@@ -63,3 +65,9 @@ damage [] _ x = x
 damage [_] CriticalHit x = x
 damage _ Miss x = x
 damage _ Invalid x = x
+
+criticalHitRoll :: Roll
+criticalHitRoll = 20
+
+missRoll :: Roll
+missRoll = 1

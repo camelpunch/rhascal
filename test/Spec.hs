@@ -90,13 +90,27 @@ prop_DefenderIsDamagedWhenAttackerHits attacker defender =
 
 prop_DefenderCountersWhenAttackerMisses :: Attacker -> Defender -> Property
 prop_DefenderCountersWhenAttackerMisses attacker defender =
-    attackerArmour > 1 && attackerArmour < 20 ==> hp' === hp - 4
+    attackerArmour > 1 && attackerArmour < 20 ==> hp' === hp - counterDamage
   where
     HitPoints hp = hitPoints attacker
     HitPoints hp' = hitPoints attackerAfter
     ArmourClass attackerArmour = armourClass attacker
-    attackDie = RiggedDie [1, attackerArmour]
-    damageDie = RiggedDie [4]
+    counterDamage = 4
+    counterRoll = attackerArmour
+    attackDie = RiggedDie [missRoll, counterRoll]
+    damageDie = RiggedDie [counterDamage]
+    [attackerAfter, _] = battle attackDie damageDie [attacker, defender]
+
+prop_TwoCountersWhenCriticalHitIsRolled :: Attacker -> Defender -> Property
+prop_TwoCountersWhenCriticalHitIsRolled attacker defender =
+    hp' === hp - counterDamage1 - counterDamage2
+  where
+    HitPoints hp = hitPoints attacker
+    HitPoints hp' = hitPoints attackerAfter
+    counterDamage1 = 4
+    counterDamage2 = 5
+    attackDie = RiggedDie [missRoll, criticalHitRoll]
+    damageDie = RiggedDie [counterDamage1, counterDamage2]
     [attackerAfter, _] = battle attackDie damageDie [attacker, defender]
 
 combine
