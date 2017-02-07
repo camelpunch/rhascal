@@ -42,7 +42,9 @@ instance Show Board where
                  map
                      (\tile ->
                           case tile of
-                              Grass character -> piece2char $ piece character
+                              Grass (Just character) ->
+                                  piece2char $ piece character
+                              Grass Nothing -> '.'
                               Wall -> '#')
                      row ++
                  "\n")
@@ -53,6 +55,6 @@ piece2char :: Piece -> Char
 piece2char (Piece char) = char
 
 data Tile
-    = Grass Character
+    = Grass (Maybe Character)
     | Wall
     deriving (Eq, Show)

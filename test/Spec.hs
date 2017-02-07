@@ -151,7 +151,8 @@ prop_SinglePlayerSpawned seed (Positive width) (Positive height) =
             (\tile ->
                  case tile of
                      Wall -> False
-                     Grass char -> piece char == Piece '@')
+                     Grass (Just char) -> piece char == Piece '@'
+                     Grass Nothing -> False)
 
 -- Manual Movement (usually a player)
 -- Automatic Movement (usually a monster)

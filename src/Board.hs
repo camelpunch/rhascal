@@ -36,7 +36,7 @@ rowItems playerPoint width y =
 plot :: Point -> Point -> Tile
 plot playerPoint candidate =
     if playerPoint == candidate
-        then Grass $ player playerPoint
+        then Grass $ Just $ player playerPoint
         else Wall
 
 player :: Point -> Character
