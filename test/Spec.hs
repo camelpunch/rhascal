@@ -16,9 +16,6 @@ newtype RiggedDie =
 instance Die RiggedDie where
     rollsOf (RiggedDie ns) = ns
 
-unusedDie :: RiggedDie
-unusedDie = RiggedDie []
-
 arbitraryDie :: [Positive Roll] -> RiggedDie
 arbitraryDie rolls = RiggedDie $ map getPositive rolls
 
@@ -59,37 +56,48 @@ prop_21PlusIsInvalid x =
 -- Combat: damaging a character
 prop_HitCausesDamage :: Defender -> Property
 prop_HitCausesDamage x =
-    hitPoints (damage die Hit x) === HitPoints (initial - 10)
+    hitPoints (damage [10, 1] Hit x) === HitPoints (initial - 10)
   where
     HitPoints initial = hitPoints x
-    die = RiggedDie [10, 1]
 
 prop_CriticalHitCausesTwoRollsOfDamage :: Defender -> Property
 prop_CriticalHitCausesTwoRollsOfDamage x =
-    hitPoints (damage die CriticalHit x) === HitPoints (initial - 15)
+    hitPoints (damage [5, 10, 999] CriticalHit x) === HitPoints (initial - 15)
   where
     HitPoints initial = hitPoints x
-    die = RiggedDie [5, 10, 999]
 
 prop_NoDamageOnMissOrInvalid :: Defender -> [Positive Roll] -> Property
 prop_NoDamageOnMissOrInvalid x rolls =
     forAll (elements [Miss, Invalid]) $ \l ->
-        hitPoints (damage (arbitraryDie rolls) l x) === hitPoints x
+        hitPoints (damage (rollsOf (arbitraryDie rolls)) l x) === hitPoints x
 
 prop_NoDamageWhenDieNotRolled :: Defender -> Property
 prop_NoDamageWhenDieNotRolled x =
     forAll (elements [Hit, CriticalHit]) $ \l ->
-        hitPoints (damage unusedDie l x) === hitPoints x
+        hitPoints (damage [] l x) === hitPoints x
 
 -- Combat: battle between two characters
 prop_DefenderIsDamagedWhenAttackerHits :: Attacker -> Defender -> Property
 prop_DefenderIsDamagedWhenAttackerHits attacker defender =
     combine attackRolls damageRolls $ \attackRoll damageRoll ->
-        let die = RiggedDie [attackRoll, damageRoll]
-            [_, defenderAfter] = battle die [attacker, defender]
-        in ArmourClass attackRoll >= armourClass defender ==>
-           hitPoints defenderAfter <
-           hitPoints defender
+        let attackDie = RiggedDie [attackRoll, 1]
+            damageDie = RiggedDie [damageRoll]
+            [_, defenderAfter] = battle attackDie damageDie [attacker, defender]
+            HitPoints hp = hitPoints defender
+            HitPoints hp' = hitPoints defenderAfter
+        in ArmourClass attackRoll >=
+           armourClass defender ==> hp' === hp - damageRoll
+
+prop_DefenderCountersWhenAttackerMisses :: Attacker -> Defender -> Property
+prop_DefenderCountersWhenAttackerMisses attacker defender =
+    attackerArmour > 1 && attackerArmour < 20 ==> hp' === hp - 4
+  where
+    HitPoints hp = hitPoints attacker
+    HitPoints hp' = hitPoints attackerAfter
+    ArmourClass attackerArmour = armourClass attacker
+    attackDie = RiggedDie [1, attackerArmour]
+    damageDie = RiggedDie [4]
+    [attackerAfter, _] = battle attackDie damageDie [attacker, defender]
 
 combine
     :: Show a
@@ -101,16 +109,6 @@ attackRolls = choose (2, 19)
 
 damageRolls :: Gen Int
 damageRolls = choose (1, 4)
-
-prop_DefenderCountersWhenAttackerMisses :: Attacker
-                                        -> Defender
-                                        -> [Positive Roll]
-                                        -> Property
-prop_DefenderCountersWhenAttackerMisses attacker defender extraRolls =
-    property $ hitPoints attackerAfter < hitPoints attacker
-  where
-    die = RiggedDie ([1, 2] ++ map getPositive extraRolls)
-    [attackerAfter, _] = battle die [attacker, defender]
 
 return []
 

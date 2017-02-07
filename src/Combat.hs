@@ -25,17 +25,23 @@ data CombatAction
 
 battle
     :: Die a
-    => a -> [Character] -> [Character]
-battle _ [] = []
-battle _ [x] = [x]
-battle die (attacker:defender:_) =
-    case combatAction attackRoll defender of
-        Hit -> [attacker, defender {hitPoints = HitPoints 0}]
-        CriticalHit -> [attacker, defender]
-        Miss -> [attacker {hitPoints = HitPoints 0}, defender]
-        Invalid -> [attacker, defender]
+    => a -> a -> [Character] -> [Character]
+battle _ _ [] = []
+battle _ _ [x] = [x]
+battle attackDie damageDie (attacker:defender:_) =
+    battleWithRolls (rollsOf attackDie) (rollsOf damageDie) [attacker, defender]
+
+battleWithRolls :: [Roll] -> [Roll] -> [Character] -> [Character]
+battleWithRolls attackRolls damageRolls (attacker:defender:_) =
+    case action of
+        Miss -> [damage damageRolls counterAction attacker, defender]
+        Hit -> [attacker, damage damageRolls action defender]
+        _ -> [attacker, defender]
   where
-    (attackRoll:_) = rollsOf die
+    action = combatAction attackRoll defender
+    counterAction = combatAction counterRoll attacker
+    (attackRoll:counterRoll:_) = attackRolls
+battleWithRolls _ _ battlers = battlers
 
 combatAction :: Roll -> Defender -> CombatAction
 combatAction 1 _ = Miss
@@ -45,18 +51,15 @@ combatAction roll defender
     | ArmourClass roll >= armourClass defender = Hit
     | otherwise = Miss
 
-damage
-    :: Die a
-    => a -> CombatAction -> Defender -> Defender
-damage die l x =
-    x
-    { hitPoints =
-          case l of
-              Hit -> HitPoints (initial - roll1)
-              CriticalHit -> HitPoints (initial - roll1 - roll2)
-              Miss -> HitPoints initial
-              Invalid -> HitPoints initial
-    }
+damage :: [Roll] -> CombatAction -> Defender -> Defender
+damage (roll:_) Hit x = x {hitPoints = HitPoints (initial - roll)}
   where
-    (roll1:roll2:_) = rollsOf die ++ repeat 0
     HitPoints initial = hitPoints x
+damage (roll1:roll2:_) CriticalHit x =
+    x {hitPoints = HitPoints (initial - roll1 - roll2)}
+  where
+    HitPoints initial = hitPoints x
+damage [] _ x = x
+damage [_] CriticalHit x = x
+damage _ Miss x = x
+damage _ Invalid x = x
