@@ -121,7 +121,7 @@ prop_ZeroHeightBoardIsEmpty seed width = board === []
     Board board = generateBoard g width 0
     g = mkStdGen seed
 
-prop_FirstAndLastRowsAreWall :: Int -> Int -> (Positive Int) -> Property
+prop_FirstAndLastRowsAreWall :: Int -> Int -> Positive Int -> Property
 prop_FirstAndLastRowsAreWall seed width (Positive height) =
     head board === wall .&&. last board == wall
   where
@@ -129,7 +129,7 @@ prop_FirstAndLastRowsAreWall seed width (Positive height) =
     g = mkStdGen seed
     wall = replicate width Wall
 
-prop_FirstAndLastColumnsAreWall :: Int -> (Positive Int) -> Int -> Property
+prop_FirstAndLastColumnsAreWall :: Int -> Positive Int -> Int -> Property
 prop_FirstAndLastColumnsAreWall seed (Positive width) height =
     firstColumn === wall .&&. lastColumn == wall
   where
@@ -139,7 +139,7 @@ prop_FirstAndLastColumnsAreWall seed (Positive width) height =
     g = mkStdGen seed
     wall = replicate height Wall
 
-prop_SinglePlayerSpawned :: Int -> (Positive Int) -> (Positive Int) -> Property
+prop_SinglePlayerSpawned :: Int -> Positive Int -> Positive Int -> Property
 prop_SinglePlayerSpawned seed (Positive width) (Positive height) =
     visibleBoard width height ==> countPlayers (concat board) === 1
   where
