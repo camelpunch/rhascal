@@ -141,17 +141,17 @@ prop_FirstAndLastColumnsAreWall seed (Positive width) height =
 
 prop_NonPlayerTilesStartEmpty :: Int -> Positive Int -> Positive Int -> Property
 prop_NonPlayerTilesStartEmpty seed (Positive width) (Positive height) =
-    visibleBoard width height ==> length (emptyTiles board) === totalTiles - 1
+    visibleBoard width height ==> countEmpties (concat board) === totalTiles - 1
   where
-    emptyTiles (Board b) = filter isEmptyTile $ concat b
-    totalTiles = (width - 2) * (height - 2)
-    board = generateBoard g width height
+    Board board = generateBoard g width height
     g = mkStdGen seed
+    countEmpties = length . filter isEmptyTile
     isEmptyTile tile =
         case tile of
-            Grass Nothing -> True
-            Grass (Just _) -> False
             Wall -> False
+            Grass (Just _) -> False
+            Grass Nothing -> True
+    totalTiles = (width - 2) * (height - 2)
 
 prop_SinglePlayerSpawned :: Int -> Positive Int -> Positive Int -> Property
 prop_SinglePlayerSpawned seed (Positive width) (Positive height) =
@@ -159,14 +159,12 @@ prop_SinglePlayerSpawned seed (Positive width) (Positive height) =
   where
     Board board = generateBoard g width height
     g = mkStdGen seed
-    countPlayers =
-        length .
-        filter
-            (\tile ->
-                 case tile of
-                     Wall -> False
-                     Grass (Just char) -> piece char == Piece '@'
-                     Grass Nothing -> False)
+    countPlayers = length . filter isPlayer
+    isPlayer tile =
+        case tile of
+            Wall -> False
+            Grass (Just char) -> piece char == Piece '@'
+            Grass Nothing -> False
 
 -- Manual Movement (usually a player)
 -- Automatic Movement (usually a monster)
