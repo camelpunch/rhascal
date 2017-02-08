@@ -131,7 +131,7 @@ prop_FirstAndLastRowsAreWall seed width (Positive height) =
 
 prop_FirstAndLastColumnsAreWall :: Int -> Positive Int -> Int -> Property
 prop_FirstAndLastColumnsAreWall seed (Positive width) height =
-    firstColumn === wall .&&. lastColumn == wall
+    firstColumn === wall .&&. lastColumn === wall
   where
     firstColumn = map head board
     lastColumn = map last board
