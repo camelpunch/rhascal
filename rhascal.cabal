@@ -19,6 +19,7 @@ library
                      , Board
                      , Combat
                      , Dice
+                     , RequestHandling
   ghc-options:         -Wall -Werror
   build-depends:       base >= 4.7 && < 5
                      , random

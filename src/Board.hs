@@ -9,38 +9,36 @@ import Model
 generateBoard :: StdGen -> Int -> Int -> Board
 generateBoard g width height
     | internal width >= 1 && internal height >= 1 =
-        let row y =
-                [Wall] ++
-                rowItems
-                    (plotPlayer g (internal width) (internal height))
-                    (internal width)
-                    y ++
-                [Wall]
-            rows = map row [1 .. internal height]
-        in Board $ [horzWall width] ++ rows ++ [horzWall width]
+        generateBoardWithContent g width height
     | otherwise = Board $ replicate height $ replicate width Wall
 
-plotPlayer :: StdGen -> Int -> Int -> Point
-plotPlayer g width height = Point (playerX, playerY)
+generateBoardWithContent :: StdGen -> Int -> Int -> Board
+generateBoardWithContent g width height =
+    Board $ [horzWall width] ++ rows ++ [horzWall width]
   where
-    (playerX, g') = randomR (1, width) g
-    (playerY, _) = randomR (1, height) g'
+    row y =
+        [Wall] ++
+        take
+            (internal width)
+            (rowItems (choosePlayerPoint (internal width) (internal height)) y) ++
+        [Wall]
+    rows = map row [1 .. internal height]
+    rowItems playerPoint y =
+        map (\x -> newTile playerPoint (Point (x, y))) [1 ..]
+    newTile playerPoint candidatePoint =
+        if playerPoint == candidatePoint
+            then Grass $ Just $ newPlayer playerPoint
+            else Grass Nothing
+    choosePlayerPoint w h = Point (playerX, playerY)
+      where
+        (playerX, g') = randomR (1, w) g
+        (playerY, _) = randomR (1, h) g'
 
 horzWall :: Int -> [Tile]
 horzWall width = replicate width Wall
 
-rowItems :: Point -> Int -> Int -> [Tile]
-rowItems playerPoint width y =
-    map (\x -> plot playerPoint (Point (x, y))) [1 .. width]
-
-plot :: Point -> Point -> Tile
-plot playerPoint candidate =
-    if playerPoint == candidate
-        then Grass $ Just $ player playerPoint
-        else Grass Nothing
-
-player :: Point -> Character
-player point =
+newPlayer :: Point -> Character
+newPlayer point =
     Character
     { piece = Piece '@'
     , hitPoints = HitPoints 1

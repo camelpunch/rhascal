@@ -6,6 +6,7 @@ module Model
     , Point(..)
     , Board(..)
     , Tile(..)
+    , Request(..)
     ) where
 
 newtype Piece =
@@ -33,6 +34,7 @@ data Character = Character
 
 newtype Board =
     Board [[Tile]]
+    deriving (Eq)
 
 instance Show Board where
     show (Board board) =
@@ -49,3 +51,9 @@ data Tile
     = Grass (Maybe Character)
     | Wall
     deriving (Eq, Show)
+
+data Request
+    = MoveUp
+    | MoveDown
+    | MoveLeft
+    | MoveRight

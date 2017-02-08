@@ -8,6 +8,7 @@ import Test.QuickCheck
 import Board
 import Combat
 import Dice
+import RequestHandling
 
 import ArbitraryTypes ()
 import TestHelpers
@@ -167,6 +168,18 @@ prop_SinglePlayerSpawned seed (Positive width) (Positive height) =
             Grass Nothing -> False
 
 -- Manual Movement (usually a player)
+prop_MovementInEveryDirectionEndsBackAtStart :: Int -> Int -> Int -> Property
+prop_MovementInEveryDirectionEndsBackAtStart seed width height =
+    handleRequest
+        MoveDown
+        (handleRequest
+             MoveUp
+             (handleRequest MoveRight (handleRequest MoveLeft board))) ===
+    board
+  where
+    board = generateBoard g width height
+    g = mkStdGen seed
+
 -- Automatic Movement (usually a monster)
 return []
 
