@@ -27,7 +27,7 @@ generateBoardWithContent g width height =
         map (\x -> newTile playerPoint (Point (x, y))) [1 ..]
     newTile playerPoint candidatePoint =
         if playerPoint == candidatePoint
-            then Grass $ Just $ newPlayer playerPoint
+            then Grass $ Just $ newPlayer
             else Grass Nothing
     choosePlayerPoint w h = Point (playerX, playerY)
       where
@@ -37,14 +37,10 @@ generateBoardWithContent g width height =
 horzWall :: Int -> [Tile]
 horzWall width = replicate width Wall
 
-newPlayer :: Point -> Character
-newPlayer point =
+newPlayer :: Character
+newPlayer =
     Character
-    { piece = Piece '@'
-    , hitPoints = HitPoints 1
-    , armourClass = ArmourClass 1
-    , coords = point
-    }
+    {piece = Piece '@', hitPoints = HitPoints 1, armourClass = ArmourClass 1}
 
 internal :: Int -> Int
 internal n = n - 2

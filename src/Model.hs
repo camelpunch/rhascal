@@ -29,7 +29,6 @@ data Character = Character
     { piece :: Piece
     , hitPoints :: HitPoints
     , armourClass :: ArmourClass
-    , coords :: Point
     } deriving (Eq, Show)
 
 newtype Board =
