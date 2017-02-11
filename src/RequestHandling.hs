@@ -7,40 +7,39 @@ import Data.List
 import Model
 
 handleRequest :: Request -> Board -> Board
-handleRequest request board =
+handleRequest request (Board b) =
+    Board $
     case request of
-        MoveLeft -> movePlayerLeft board
-        MoveRight -> movePlayerRight board
-        MoveUp -> movePlayerUp board
-        MoveDown -> movePlayerDown board
+        MoveLeft -> left b
+        MoveRight -> right b
+        MoveUp -> up b
+        MoveDown -> down b
   where
-    movePlayerLeft (Board b) = Board $ map decreaseOnAxis b
-    movePlayerRight (Board b) =
-        Board $ map (reverse . decreaseOnAxis . reverse) b
-    movePlayerUp (Board b) =
-        Board $ transpose $ map decreaseOnAxis $ transpose b
-    movePlayerDown (Board b) =
-        Board $
-        transpose $ map (reverse . decreaseOnAxis . reverse) $ transpose b
-    decreaseOnAxis xs =
+    left = map moveBackOnAxis
+    right = map moveForwardOnAxis
+    up = transpose . map moveBackOnAxis . transpose
+    down = transpose . map moveForwardOnAxis . transpose
+    moveBackOnAxis xs =
         case xs of
             [] -> xs
             [_] -> xs
-            (x:y:t) -> decrease [] x y t
+            (x:y:t) -> moveBack [] x y t
+    moveForwardOnAxis = reverse . moveBackOnAxis . reverse
 
-decrease :: [Tile] -> Tile -> Tile -> [Tile] -> [Tile]
-decrease processed x y t =
+moveBack :: [Tile] -> Tile -> Tile -> [Tile] -> [Tile]
+moveBack processed x y t =
     case (x, y) of
-        (_, Wall) -> input
-        (Wall, Grass (Just _)) -> input
-        (Grass (Just _), Grass _) -> input
-        (Grass Nothing, Grass (Just _)) -> processed ++ [y, x] ++ t
+        (_, Wall) -> stop
+        (Wall, Grass (Just _)) -> stop
+        (Grass (Just _), Grass _) -> stop
         (Wall, Grass Nothing) -> nextPair
         (Grass Nothing, Grass Nothing) -> nextPair
+        (Grass Nothing, Grass (Just _)) -> swap
   where
-    input = processed ++ [x, y] ++ t
+    stop = processed ++ [x, y] ++ t
+    swap = processed ++ [y, x] ++ t
     nextPair =
         case t of
-            [] -> input
-            [z] -> processed ++ [x, y, z]
-            (x':t') -> decrease (processed ++ [x]) y x' t'
+            [] -> stop
+            [_] -> stop
+            (y':t') -> moveBack (processed ++ [x]) y y' t'
