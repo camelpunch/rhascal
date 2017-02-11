@@ -37,6 +37,7 @@ newtype Board =
 
 instance Show Board where
     show (Board board) =
+        "\n" ++
         foldl (\output row -> output ++ map tile2char row ++ "\n") "" board
 
 tile2char :: Tile -> Char

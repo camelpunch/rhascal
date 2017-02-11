@@ -1,5 +1,6 @@
 module TestHelpers
     ( RiggedDie(..)
+    , boardCounterexample
     , combine
     , arbitraryDie
     , rollsOf
@@ -9,6 +10,7 @@ module TestHelpers
     ) where
 
 import Dice
+import Model
 
 import Test.QuickCheck
 
@@ -17,6 +19,12 @@ combine
     :: Show a
     => Gen a -> Gen a -> (a -> a -> Property) -> Property
 combine x y f = forAll x $ \n -> forAll y $ \m -> f n m
+
+-- Board
+boardCounterexample :: Board -> Board -> Property -> Property
+boardCounterexample before after =
+    counterexample $
+    "\nBEFORE\n\n" ++ show before ++ "\nAFTER\n\n" ++ show after
 
 -- Dice
 newtype RiggedDie =

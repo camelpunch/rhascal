@@ -27,7 +27,7 @@ generateBoardWithContent g width height =
         map (\x -> newTile playerPoint (Point (x, y))) [1 ..]
     newTile playerPoint candidatePoint =
         if playerPoint == candidatePoint
-            then Grass $ Just $ newPlayer
+            then Grass (Just newPlayer)
             else Grass Nothing
     choosePlayerPoint w h = Point (playerX, playerY)
       where

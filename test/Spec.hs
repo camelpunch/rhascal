@@ -110,7 +110,8 @@ prop_TwoCountersWhenCriticalHitIsRolled attacker defender =
 -- Board display
 prop_BoardShowsWithLineBreaks :: Int -> Positive Int -> Positive Int -> Property
 prop_BoardShowsWithLineBreaks seed (Positive width) (Positive height) =
-    visibleBoard width height ==> length (lines (show board)) === height
+    visibleBoard width height ==> length (lines (show board)) === height +
+    length ["\n"]
   where
     board = generateBoard g width height
     g = mkStdGen seed
@@ -170,15 +171,57 @@ prop_SinglePlayerSpawned seed (Positive width) (Positive height) =
 -- Manual Movement (usually a player)
 prop_MovementInEveryDirectionEndsBackAtStart :: Int -> Int -> Int -> Property
 prop_MovementInEveryDirectionEndsBackAtStart seed width height =
-    handleRequest
-        MoveDown
-        (handleRequest
-             MoveUp
-             (handleRequest MoveRight (handleRequest MoveLeft board))) ===
-    board
+    hasSpaceToMoveLeft before ==> before === after
   where
-    board = generateBoard g width height
+    before = generateBoard g width height
+    after =
+        handleRequest
+            MoveDown
+            (handleRequest
+                 MoveUp
+                 (handleRequest MoveRight (handleRequest MoveLeft before)))
     g = mkStdGen seed
+
+prop_MovingLeftMovesPlayerLeft :: Int
+                               -> Positive Int
+                               -> Positive Int
+                               -> Property
+prop_MovingLeftMovesPlayerLeft seed (Positive width) (Positive height) =
+    boardCounterexample before after $
+    visibleBoard width height &&
+    hasSpaceToMoveLeft before ==> playerX after === playerX before - 1
+  where
+    before = generateBoard g width height
+    after = handleRequest MoveLeft before
+    g = mkStdGen seed
+
+hasSpaceToMoveLeft :: Board -> Bool
+hasSpaceToMoveLeft board =
+    visibleBoard width height &&
+    beforeTiles !! playerY board !! (playerX board - 1) == Grass Nothing
+  where
+    Board beforeTiles = board
+    width = length beforeTiles
+    height = length ((beforeTiles !! 0) ++ [])
+
+playerX :: Board -> Int
+playerX b = fst $ playerCoords b
+
+playerY :: Board -> Int
+playerY b = snd $ playerCoords b
+
+playerCoords :: Board -> (Int, Int)
+playerCoords b = (x, y)
+  where
+    (((x, y), _):_) = filter isCharacter (concat (tilesWithCoords b))
+
+isCharacter :: ((Int, Int), Tile) -> Bool
+isCharacter (_, Grass (Just _)) = True
+isCharacter _ = False
+
+tilesWithCoords :: Board -> [[((Int, Int), Tile)]]
+tilesWithCoords (Board b) =
+    zipWith (\y row -> zipWith (\x tile -> ((x, y), tile)) [0 ..] row) [0 ..] b
 
 -- Automatic Movement (usually a monster)
 return []
