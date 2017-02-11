@@ -5,24 +5,33 @@ import System.IO
 import System.Random
 
 import Board
+import Model
+import RequestHandling
 
 main :: IO ()
 main = do
     hSetBuffering stdin NoBuffering
     showCursor
     setCursorPosition 0 0
-    loop
+    g <- getStdGen
+    loop $ generateBoard g width height
 
-loop :: IO ()
-loop = do
-    g <- newStdGen
+loop :: Board -> IO ()
+loop board = do
     clearScreen
     putStrLn ""
-    print $ generateBoard g width height
+    print board
     key <- getChar
     case key of
-        'j' -> loop
-        _ -> loop
+        'h' -> do
+            loop $ handleRequest MoveLeft board
+        'j' -> do
+            loop $ handleRequest MoveDown board
+        'k' -> do
+            loop $ handleRequest MoveUp board
+        'l' -> do
+            loop $ handleRequest MoveRight board
+        _ -> loop board
 
 width :: Int
 width = 80
