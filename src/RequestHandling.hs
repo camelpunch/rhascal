@@ -2,6 +2,8 @@ module RequestHandling
     ( handleRequest
     ) where
 
+import Data.List
+
 import Model
 
 handleRequest :: Request -> Board -> Board
@@ -9,19 +11,25 @@ handleRequest request board =
     case request of
         MoveLeft -> movePlayerLeft board
         MoveRight -> movePlayerRight board
-        MoveUp -> board
-        MoveDown -> board
+        MoveUp -> movePlayerUp board
+        MoveDown -> movePlayerDown board
   where
-    movePlayerLeft (Board b) = Board $ map moveLeft b
-    movePlayerRight (Board b) = Board $ map (reverse . moveLeft . reverse) b
-    moveLeft row =
-        case row of
-            [] -> row
-            [_] -> row
-            (x:y:t) -> movePlayerLeftInRow [] x y t
+    movePlayerLeft (Board b) = Board $ map decreaseOnAxis b
+    movePlayerRight (Board b) =
+        Board $ map (reverse . decreaseOnAxis . reverse) b
+    movePlayerUp (Board b) =
+        Board $ transpose $ map decreaseOnAxis $ transpose b
+    movePlayerDown (Board b) =
+        Board $
+        transpose $ map (reverse . decreaseOnAxis . reverse) $ transpose b
+    decreaseOnAxis xs =
+        case xs of
+            [] -> xs
+            [_] -> xs
+            (x:y:t) -> decrease [] x y t
 
-movePlayerLeftInRow :: [Tile] -> Tile -> Tile -> [Tile] -> [Tile]
-movePlayerLeftInRow processed x y t =
+decrease :: [Tile] -> Tile -> Tile -> [Tile] -> [Tile]
+decrease processed x y t =
     case (x, y) of
         (_, Wall) -> input
         (Wall, Grass (Just _)) -> input
@@ -35,4 +43,4 @@ movePlayerLeftInRow processed x y t =
         case t of
             [] -> input
             [z] -> processed ++ [x, y, z]
-            (x':t') -> movePlayerLeftInRow (processed ++ [x]) y x' t'
+            (x':t') -> decrease (processed ++ [x]) y x' t'

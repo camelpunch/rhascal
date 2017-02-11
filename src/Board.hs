@@ -23,13 +23,12 @@ generateBoardWithContent g width height =
             (rowItems (choosePlayerPoint (internal width) (internal height)) y) ++
         [Wall]
     rows = map row [1 .. internal height]
-    rowItems playerPoint y =
-        map (\x -> newTile playerPoint (Point (x, y))) [1 ..]
+    rowItems playerPoint y = map (\x -> newTile playerPoint (x, y)) [1 ..]
     newTile playerPoint candidatePoint =
         if playerPoint == candidatePoint
             then Grass (Just newPlayer)
             else Grass Nothing
-    choosePlayerPoint w h = Point (playerX, playerY)
+    choosePlayerPoint w h = (playerX, playerY)
       where
         (playerX, g') = randomR (1, w) g
         (playerY, _) = randomR (1, h) g'

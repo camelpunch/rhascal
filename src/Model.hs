@@ -3,7 +3,7 @@ module Model
     , Character(..)
     , HitPoints(..)
     , Piece(..)
-    , Point(..)
+    , Point
     , Board(..)
     , Tile(..)
     , Request(..)
@@ -21,9 +21,7 @@ newtype ArmourClass =
     ArmourClass Int
     deriving (Eq, Show, Ord)
 
-newtype Point =
-    Point (Int, Int)
-    deriving (Eq, Show)
+type Point = (Int, Int)
 
 data Character = Character
     { piece :: Piece

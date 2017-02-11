@@ -171,7 +171,7 @@ prop_SinglePlayerSpawned seed (Positive width) (Positive height) =
 -- Manual Movement (usually a player)
 prop_MovementInEveryDirectionEndsBackAtStart :: Int -> Int -> Int -> Property
 prop_MovementInEveryDirectionEndsBackAtStart seed width height =
-    hasSpaceToMoveLeft before ==> before === after
+    hasSpaceToMoveLeft before && hasSpaceToMoveUp before ==> before === after
   where
     before = generateBoard g width height
     allDirections =
@@ -201,22 +201,40 @@ hasSpaceToMoveLeft board =
     width = length beforeTiles
     height = length (head beforeTiles ++ [])
 
+prop_MovingUpMovesPlayerUp :: Int -> Positive Int -> Positive Int -> Property
+prop_MovingUpMovesPlayerUp seed (Positive width) (Positive height) =
+    boardCounterexample before after $
+    hasSpaceToMoveUp before ==> playerY after === playerY before - 1
+  where
+    before = generateBoard g width height
+    after = handleRequest MoveUp before
+    g = mkStdGen seed
+
+hasSpaceToMoveUp :: Board -> Bool
+hasSpaceToMoveUp board =
+    visibleBoard width height &&
+    beforeTiles !! ((playerY board) - 1) !! playerX board == Grass Nothing
+  where
+    Board beforeTiles = board
+    width = length beforeTiles
+    height = length (head beforeTiles ++ [])
+
 playerX :: Board -> Int
-playerX b = fst $ playerCoords b
+playerX = fst . playerCoords
 
 playerY :: Board -> Int
-playerY b = snd $ playerCoords b
+playerY = snd . playerCoords
 
-playerCoords :: Board -> (Int, Int)
+playerCoords :: Board -> Point
 playerCoords b = (x, y)
   where
     (((x, y), _):_) = (filter isCharacter . concat . tilesWithCoords) b
 
-isCharacter :: ((Int, Int), Tile) -> Bool
+isCharacter :: (Point, Tile) -> Bool
 isCharacter (_, Grass (Just _)) = True
 isCharacter _ = False
 
-tilesWithCoords :: Board -> [[((Int, Int), Tile)]]
+tilesWithCoords :: Board -> [[(Point, Tile)]]
 tilesWithCoords (Board b) = zipWith rowWithCoords [0 ..] b
   where
     rowWithCoords y row = zipWith (tileWithCoords y) [0 ..] row
