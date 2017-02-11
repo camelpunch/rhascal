@@ -13,8 +13,7 @@ handleRequest request board =
         MoveDown -> board
   where
     movePlayerLeft (Board b) = Board $ map moveLeft b
-    movePlayerRight (Board b) =
-        Board $ map (\row -> reverse $ moveLeft $ reverse row) b
+    movePlayerRight (Board b) = Board $ map (reverse . moveLeft . reverse) b
     moveLeft row =
         case row of
             [] -> row

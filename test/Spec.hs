@@ -174,12 +174,10 @@ prop_MovementInEveryDirectionEndsBackAtStart seed width height =
     hasSpaceToMoveLeft before ==> before === after
   where
     before = generateBoard g width height
-    after =
-        handleRequest
-            MoveDown
-            (handleRequest
-                 MoveUp
-                 (handleRequest MoveRight (handleRequest MoveLeft before)))
+    allDirections =
+        handleRequest MoveDown .
+        handleRequest MoveUp . handleRequest MoveRight . handleRequest MoveLeft
+    after = allDirections before
     g = mkStdGen seed
 
 prop_MovingLeftMovesPlayerLeft :: Int
@@ -188,7 +186,6 @@ prop_MovingLeftMovesPlayerLeft :: Int
                                -> Property
 prop_MovingLeftMovesPlayerLeft seed (Positive width) (Positive height) =
     boardCounterexample before after $
-    visibleBoard width height &&
     hasSpaceToMoveLeft before ==> playerX after === playerX before - 1
   where
     before = generateBoard g width height
@@ -202,7 +199,7 @@ hasSpaceToMoveLeft board =
   where
     Board beforeTiles = board
     width = length beforeTiles
-    height = length ((beforeTiles !! 0) ++ [])
+    height = length (head beforeTiles ++ [])
 
 playerX :: Board -> Int
 playerX b = fst $ playerCoords b
@@ -213,15 +210,17 @@ playerY b = snd $ playerCoords b
 playerCoords :: Board -> (Int, Int)
 playerCoords b = (x, y)
   where
-    (((x, y), _):_) = filter isCharacter (concat (tilesWithCoords b))
+    (((x, y), _):_) = (filter isCharacter . concat . tilesWithCoords) b
 
 isCharacter :: ((Int, Int), Tile) -> Bool
 isCharacter (_, Grass (Just _)) = True
 isCharacter _ = False
 
 tilesWithCoords :: Board -> [[((Int, Int), Tile)]]
-tilesWithCoords (Board b) =
-    zipWith (\y row -> zipWith (\x tile -> ((x, y), tile)) [0 ..] row) [0 ..] b
+tilesWithCoords (Board b) = zipWith rowWithCoords [0 ..] b
+  where
+    rowWithCoords y row = zipWith (tileWithCoords y) [0 ..] row
+    tileWithCoords y = \x tile -> ((x, y), tile)
 
 -- Automatic Movement (usually a monster)
 return []
