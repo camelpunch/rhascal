@@ -10,28 +10,28 @@ import RequestHandling
 
 main :: IO ()
 main = do
+    hSetEcho stdin False
     hSetBuffering stdin NoBuffering
     showCursor
     setCursorPosition 0 0
     g <- getStdGen
+    clearScreen
     loop $ generateBoard g width height
 
 loop :: Board -> IO ()
 loop board = do
-    clearScreen
-    putStrLn ""
+    cursorUpLine (height + 3)
     print board
     key <- getChar
-    case key of
-        'h' -> do
-            loop $ handleRequest MoveLeft board
-        'j' -> do
-            loop $ handleRequest MoveDown board
-        'k' -> do
-            loop $ handleRequest MoveUp board
-        'l' -> do
-            loop $ handleRequest MoveRight board
-        _ -> loop board
+    cursorUpLine 2
+    let action =
+            case key of
+                'h' -> MoveLeft
+                'j' -> MoveDown
+                'k' -> MoveUp
+                'l' -> MoveRight
+                _ -> DoNothing
+    loop $ handleRequest action board
 
 width :: Int
 width = 80

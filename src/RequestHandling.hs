@@ -14,6 +14,7 @@ handleRequest request (Board b) =
         MoveRight -> right b
         MoveUp -> up b
         MoveDown -> down b
+        DoNothing -> b
   where
     left = map moveBackOnAxis
     right = map moveForwardOnAxis

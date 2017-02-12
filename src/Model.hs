@@ -55,3 +55,4 @@ data Request
     | MoveDown
     | MoveLeft
     | MoveRight
+    | DoNothing
