@@ -23,7 +23,6 @@ loop board = do
     cursorUpLine (height + 3)
     print board
     key <- getChar
-    cursorUpLine 2
     let action =
             case key of
                 'h' -> MoveLeft
