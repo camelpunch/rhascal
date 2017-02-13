@@ -56,3 +56,4 @@ data Request
     | MoveLeft
     | MoveRight
     | DoNothing
+    deriving (Show)

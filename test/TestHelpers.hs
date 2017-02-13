@@ -1,5 +1,6 @@
 module TestHelpers
     ( RiggedDie(..)
+    , allDirections
     , boardCounterexample
     , combine
     , arbitraryDie
@@ -11,6 +12,7 @@ module TestHelpers
 
 import Dice
 import Model
+import RequestHandling
 
 import Test.QuickCheck
 
@@ -25,6 +27,11 @@ boardCounterexample :: Board -> Board -> Property -> Property
 boardCounterexample before after =
     counterexample $
     "\nBEFORE\n\n" ++ show before ++ "\nAFTER\n\n" ++ show after
+
+allDirections :: Board -> Board
+allDirections =
+    handleRequest MoveDown .
+    handleRequest MoveUp . handleRequest MoveRight . handleRequest MoveLeft
 
 -- Dice
 newtype RiggedDie =

@@ -174,9 +174,6 @@ prop_MovementInEveryDirectionEndsBackAtStart seed width height =
     hasSpaceToMoveLeft before && hasSpaceToMoveUp before ==> before === after
   where
     before = generateBoard g width height
-    allDirections =
-        handleRequest MoveDown .
-        handleRequest MoveUp . handleRequest MoveRight . handleRequest MoveLeft
     after = allDirections before
     g = mkStdGen seed
 
