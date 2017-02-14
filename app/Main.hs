@@ -1,10 +1,12 @@
 module Main where
 
+import Data.Foldable
 import System.Console.ANSI
 import System.IO
 import System.Random
 
 import Board
+import Display
 import Model
 import RequestHandling
 
@@ -13,24 +15,33 @@ main = do
     hSetEcho stdin False
     hSetBuffering stdin NoBuffering
     showCursor
-    setCursorPosition 0 0
     g <- getStdGen
     clearScreen
-    loop $ generateBoard g width height
+    let board = generateBoard g width height
+    setCursorPosition 0 0
+    print board
+    loop board
 
 loop :: Board -> IO ()
-loop board = do
-    cursorUpLine (height + 3)
-    print board
+loop old = do
     key <- getChar
-    let action =
-            case key of
-                'h' -> MoveLeft
-                'j' -> MoveDown
-                'k' -> MoveUp
-                'l' -> MoveRight
-                _ -> DoNothing
-    loop $ handleRequest action board
+    let new = handleRequest (requestFromKey key) old
+    setCursorPosition 0 0
+    printChanges $ changedLines old new
+    loop new
+
+requestFromKey :: Char -> Request
+requestFromKey 'h' = MoveLeft
+requestFromKey 'j' = MoveDown
+requestFromKey 'k' = MoveUp
+requestFromKey 'l' = MoveRight
+requestFromKey _ = DoNothing
+
+printChanges :: [(Bool, [Tile])] -> IO ()
+printChanges changes = traverse_ put changes
+  where
+    put (True, row) = putStrLn $ showRow row
+    put (False, _) = cursorDownLine 1
 
 width :: Int
 width = 80

@@ -8,6 +8,7 @@ import Test.QuickCheck
 import Board
 import Combat
 import Dice
+import Display
 import RequestHandling
 
 import ArbitraryTypes ()
@@ -110,11 +111,57 @@ prop_TwoCountersWhenCriticalHitIsRolled attacker defender =
 -- Board display
 prop_BoardShowsWithLineBreaks :: Int -> Positive Int -> Positive Int -> Property
 prop_BoardShowsWithLineBreaks seed (Positive width) (Positive height) =
-    visibleBoard width height ==> length (lines (show board)) === height +
-    length ["\n"]
+    visibleBoard width height ==> length (lines (show board)) === height
   where
     board = generateBoard g width height
     g = mkStdGen seed
+
+prop_DifferenceRepresentedByBoolean :: Property
+prop_DifferenceRepresentedByBoolean =
+    changedLines before after ===
+    [ (False, [Wall, Wall])
+    , (True, [Grass Nothing, Grass Nothing])
+    , (True, [Grass Nothing, Grass (Just player)])
+    ]
+  where
+    before =
+        Board
+            [ [Wall, Wall]
+            , [Grass Nothing, Grass (Just player)]
+            , [Grass Nothing, Grass Nothing]
+            ]
+    after = handleRequest MoveDown before
+    player =
+        Character
+        { piece = Piece '@'
+        , hitPoints = HitPoints 1
+        , armourClass = ArmourClass 1
+        }
+
+prop_MovingHorizontallyChangesMaximumOneLine :: Int
+                                             -> Positive Int
+                                             -> Positive Int
+                                             -> Property
+prop_MovingHorizontallyChangesMaximumOneLine seed (Positive width) (Positive height) =
+    forAll (elements [MoveLeft, MoveRight]) $ \direction ->
+        let n = numChanged seed width height direction
+        in collect n $ n <= 1
+
+prop_MovingVerticallyChangesZeroOrTwoLines :: Int
+                                           -> Positive Int
+                                           -> Positive Int
+                                           -> Property
+prop_MovingVerticallyChangesZeroOrTwoLines seed (Positive width) (Positive height) =
+    forAll (elements [MoveUp, MoveDown]) $ \direction ->
+        let n = numChanged seed width height direction
+        in collect n $ n == 0 || n == 2
+
+numChanged :: Int -> Int -> Int -> Request -> Int
+numChanged seed width height direction =
+    let before = generateBoard g width height
+        after = handleRequest direction before
+        g = mkStdGen seed
+    in length (filter fst $ changedLines before after)
 
 -- Logical board
 prop_ZeroHeightBoardIsEmpty :: Int -> Int -> Property
@@ -190,11 +237,10 @@ prop_MovingLeftMovesPlayerLeft seed (Positive width) (Positive height) =
     g = mkStdGen seed
 
 hasSpaceToMoveLeft :: Board -> Bool
-hasSpaceToMoveLeft board =
+hasSpaceToMoveLeft board@(Board beforeTiles) =
     visibleBoard width height &&
     beforeTiles !! playerY board !! (playerX board - 1) == Grass Nothing
   where
-    Board beforeTiles = board
     width = length beforeTiles
     height = length (head beforeTiles ++ [])
 
@@ -208,11 +254,10 @@ prop_MovingUpMovesPlayerUp seed (Positive width) (Positive height) =
     g = mkStdGen seed
 
 hasSpaceToMoveUp :: Board -> Bool
-hasSpaceToMoveUp board =
+hasSpaceToMoveUp board@(Board beforeTiles) =
     visibleBoard width height &&
-    beforeTiles !! ((playerY board) - 1) !! playerX board == Grass Nothing
+    beforeTiles !! (playerY board - 1) !! playerX board == Grass Nothing
   where
-    Board beforeTiles = board
     width = length beforeTiles
     height = length (head beforeTiles ++ [])
 
@@ -234,8 +279,8 @@ isCharacter _ = False
 tilesWithCoords :: Board -> [[(Point, Tile)]]
 tilesWithCoords (Board b) = zipWith rowWithCoords [0 ..] b
   where
-    rowWithCoords y row = zipWith (tileWithCoords y) [0 ..] row
-    tileWithCoords y = \x tile -> ((x, y), tile)
+    rowWithCoords y = zipWith (tileWithCoords y) [0 ..]
+    tileWithCoords y x tile = ((x, y), tile)
 
 -- Automatic Movement (usually a monster)
 return []

@@ -7,6 +7,7 @@ module Model
     , Board(..)
     , Tile(..)
     , Request(..)
+    , showRow
     ) where
 
 newtype Piece =
@@ -35,8 +36,10 @@ newtype Board =
 
 instance Show Board where
     show (Board board) =
-        "\n" ++
-        foldl (\output row -> output ++ map tile2char row ++ "\n") "" board
+        foldl (\output row -> output ++ showRow row ++ "\n") "" board
+
+showRow :: [Tile] -> String
+showRow = map tile2char
 
 tile2char :: Tile -> Char
 tile2char Wall = '#'
