@@ -4,16 +4,19 @@ module TestHelpers
     , boardCounterexample
     , combine
     , arbitraryDie
+    , forAllVisibleBoards
     , rollsOf
     , attackRolls
     , damageRolls
     , visibleBoard
     ) where
 
+import Board
 import Dice
 import Model
 import RequestHandling
 
+import System.Random
 import Test.QuickCheck
 
 -- QuickCheck
@@ -21,6 +24,14 @@ combine
     :: Show a
     => Gen a -> Gen a -> (a -> a -> Property) -> Property
 combine x y f = forAll x $ \n -> forAll y $ \m -> f n m
+
+forAllVisibleBoards :: (Board -> Property) -> Property
+forAllVisibleBoards f =
+    forAll (choose (1, 1000)) $ \seed ->
+        forAll (choose (3, 50)) $ \width ->
+            forAll (choose (3, 50)) $ \height ->
+                let g = mkStdGen seed
+                in f $ generateBoard g width height
 
 -- Board
 boardCounterexample :: Board -> Board -> Property -> Property

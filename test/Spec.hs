@@ -109,12 +109,10 @@ prop_TwoCountersWhenCriticalHitIsRolled attacker defender =
     [attackerAfter, _] = battle attackDie damageDie [attacker, defender]
 
 -- Board display
-prop_BoardShowsWithLineBreaks :: Int -> Positive Int -> Positive Int -> Property
-prop_BoardShowsWithLineBreaks seed (Positive width) (Positive height) =
-    visibleBoard width height ==> length (lines (show board)) === height
-  where
-    board = generateBoard g width height
-    g = mkStdGen seed
+prop_BoardShowsWithLineBreaks :: Property
+prop_BoardShowsWithLineBreaks =
+    forAllVisibleBoards $ \board@(Board rows) ->
+        length (lines (show board)) === length rows
 
 prop_DifferenceRepresentedByBoolean :: Property
 prop_DifferenceRepresentedByBoolean =
@@ -188,41 +186,38 @@ prop_FirstAndLastColumnsAreWall seed (Positive width) height =
     g = mkStdGen seed
     wall = replicate height Wall
 
-prop_NonPlayerTilesStartEmpty :: Int -> Positive Int -> Positive Int -> Property
-prop_NonPlayerTilesStartEmpty seed (Positive width) (Positive height) =
-    visibleBoard width height ==> countEmpties (concat board) === totalTiles - 1
-  where
-    Board board = generateBoard g width height
-    g = mkStdGen seed
-    countEmpties = length . filter isEmptyTile
-    isEmptyTile tile =
-        case tile of
-            Wall -> False
-            Grass (Just _) -> False
-            Grass Nothing -> True
-    totalTiles = (width - 2) * (height - 2)
+prop_NonPlayerTilesStartEmpty :: Property
+prop_NonPlayerTilesStartEmpty =
+    forAllVisibleBoards $ \(Board rows) ->
+        let countEmpties = length . filter isEmptyTile
+            isEmptyTile tile =
+                case tile of
+                    Wall -> False
+                    Grass (Just _) -> False
+                    Grass Nothing -> True
+            height = length rows
+            width = length $ head rows
+            totalTiles = (width - 2) * (height - 2)
+        in countEmpties (concat rows) === totalTiles - 1
 
-prop_SinglePlayerSpawned :: Int -> Positive Int -> Positive Int -> Property
-prop_SinglePlayerSpawned seed (Positive width) (Positive height) =
-    visibleBoard width height ==> countPlayers (concat board) === 1
-  where
-    Board board = generateBoard g width height
-    g = mkStdGen seed
-    countPlayers = length . filter isPlayer
-    isPlayer tile =
-        case tile of
-            Wall -> False
-            Grass (Just char) -> piece char == Piece '@'
-            Grass Nothing -> False
+prop_SinglePlayerSpawned :: Property
+prop_SinglePlayerSpawned =
+    forAllVisibleBoards $ \(Board rows) ->
+        let countPlayers = length . filter isPlayer
+            isPlayer tile =
+                case tile of
+                    Wall -> False
+                    Grass (Just char) -> piece char == Piece '@'
+                    Grass Nothing -> False
+        in countPlayers (concat rows) === 1
 
 -- Manual Movement (usually a player)
-prop_MovementInEveryDirectionEndsBackAtStart :: Int -> Int -> Int -> Property
-prop_MovementInEveryDirectionEndsBackAtStart seed width height =
-    hasSpaceToMoveLeft before && hasSpaceToMoveUp before ==> before === after
-  where
-    before = generateBoard g width height
-    after = allDirections before
-    g = mkStdGen seed
+prop_MovementInEveryDirectionEndsBackAtStart :: Property
+prop_MovementInEveryDirectionEndsBackAtStart =
+    forAllVisibleBoards $ \before ->
+        let after = allDirections before
+        in hasSpaceToMoveLeft before &&
+           hasSpaceToMoveUp before ==> before === after
 
 prop_MovingLeftMovesPlayerLeft :: Int
                                -> Positive Int

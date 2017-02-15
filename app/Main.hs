@@ -7,6 +7,7 @@ import System.Random
 
 import Board
 import Display
+import Keyboard
 import Model
 import RequestHandling
 
@@ -29,13 +30,6 @@ loop old = do
     setCursorPosition 0 0
     printChanges $ changedLines old new
     loop new
-
-requestFromKey :: Char -> Request
-requestFromKey 'h' = MoveLeft
-requestFromKey 'j' = MoveDown
-requestFromKey 'k' = MoveUp
-requestFromKey 'l' = MoveRight
-requestFromKey _ = DoNothing
 
 printChanges :: [(Bool, [Tile])] -> IO ()
 printChanges changes = traverse_ put changes

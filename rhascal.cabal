@@ -20,6 +20,7 @@ library
                      , Combat
                      , Dice
                      , Display
+                     , Keyboard
                      , RequestHandling
   ghc-options:         -Wall -Werror
   build-depends:       base >= 4.7 && < 5
