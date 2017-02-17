@@ -4,6 +4,7 @@ module Model
     , HitPoints(..)
     , Piece(..)
     , Point
+    , Game(..)
     , Board(..)
     , Tile(..)
     , Request(..)
@@ -29,6 +30,9 @@ data Character = Character
     , hitPoints :: HitPoints
     , armourClass :: ArmourClass
     } deriving (Eq, Show)
+
+newtype Game =
+    Game [Board]
 
 newtype Board =
     Board [[Tile]]

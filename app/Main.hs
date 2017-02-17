@@ -16,26 +16,37 @@ main = do
     hSetEcho stdin False
     hSetBuffering stdin NoBuffering
     showCursor
+    loop $ Game []
+
+loop :: Game -> IO ()
+loop (Game []) = do
     g <- getStdGen
     clearScreen
     let board = generateBoard g width height
+        game = Game [board]
     setCursorPosition 0 0
     print board
-    loop board
-
-loop :: Board -> IO ()
-loop old = do
+    printTurns [board]
+    loop game
+loop (Game (x:xs)) = do
     key <- getChar
-    let new = handleRequest (requestFromKey key) old
+    let new = handleRequest (requestFromKey key) x
+        newTurns = new : x : xs
     setCursorPosition 0 0
-    printChanges $ changedLines old new
-    loop new
+    printChanges $ changedLines x new
+    printTurns newTurns
+    loop $ Game newTurns
 
 printChanges :: [(Bool, [Tile])] -> IO ()
-printChanges changes = traverse_ put changes
+printChanges = traverse_ put
   where
     put (True, row) = putStrLn $ showRow row
     put (False, _) = cursorDownLine 1
+
+printTurns :: [Board] -> IO ()
+printTurns turns = do
+    setCursorPosition height 0
+    putStrLn $ "Turns: " ++ show (length turns)
 
 width :: Int
 width = 80
