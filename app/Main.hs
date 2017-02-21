@@ -46,7 +46,7 @@ printChanges = traverse_ put
 printTurns :: [Board] -> IO ()
 printTurns turns = do
     setCursorPosition height 0
-    putStrLn $ "Turns: " ++ show (length turns)
+    putStrLn $ "Turn: " ++ show (length turns)
 
 width :: Int
 width = 80
