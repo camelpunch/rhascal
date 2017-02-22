@@ -28,8 +28,8 @@ handleRequest request (Board b) =
     moveForwardOnAxis = reverse . moveBackOnAxis . reverse
 
 moveBack :: [Tile] -> Tile -> Tile -> [Tile] -> [Tile]
-moveBack processed x y t =
-    case (x, y) of
+moveBack processed first second rest =
+    case (first, second) of
         (_, Wall) -> stop
         (Wall, Grass (Just _)) -> stop
         (Grass (Just _), Grass _) -> stop
@@ -37,10 +37,11 @@ moveBack processed x y t =
         (Grass Nothing, Grass Nothing) -> nextPair
         (Grass Nothing, Grass (Just _)) -> swap
   where
-    stop = processed ++ [x, y] ++ t
-    swap = processed ++ [y, x] ++ t
+    stop = processed ++ [first, second] ++ rest
+    swap = processed ++ [second, first] ++ rest
     nextPair =
-        case t of
+        case rest of
             [] -> stop
             [_] -> stop
-            (y':t') -> moveBack (processed ++ [x]) y y' t'
+            (second':rest') ->
+                moveBack (processed ++ [first]) second second' rest'
