@@ -4,9 +4,9 @@ module Keyboard
 
 import Model (Request(..))
 
-requestFromKey :: Char -> Request
-requestFromKey 'h' = MoveLeft
-requestFromKey 'j' = MoveDown
-requestFromKey 'k' = MoveUp
-requestFromKey 'l' = MoveRight
-requestFromKey _ = DoNothing
+requestFromKey :: Char -> Maybe Request
+requestFromKey 'h' = Just MoveLeft
+requestFromKey 'j' = Just MoveDown
+requestFromKey 'k' = Just MoveUp
+requestFromKey 'l' = Just MoveRight
+requestFromKey _ = Nothing

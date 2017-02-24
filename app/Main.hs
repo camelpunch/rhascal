@@ -28,14 +28,17 @@ loop (Game []) = do
     print board
     printTurns [board]
     loop game
-loop (Game (x:xs)) = do
+loop (Game turns@(x:_)) = do
     key <- getChar
-    let new = handleRequest (requestFromKey key) x
-        newTurns = new : x : xs
-    setCursorPosition 0 0
-    printChanges $ changedLines x new
-    printTurns newTurns
-    loop $ Game newTurns
+    case requestFromKey key of
+        Nothing -> loop $ Game turns
+        Just request ->
+            let new = handleRequest request x
+                newTurns = new : turns
+            in do setCursorPosition 0 0
+                  printChanges $ changedLines x new
+                  printTurns newTurns
+                  loop $ Game newTurns
 
 printChanges :: [(Bool, [Tile])] -> IO ()
 printChanges = traverse_ put
