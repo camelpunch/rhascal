@@ -277,7 +277,6 @@ tilesWithCoords (Board b) = zipWith rowWithCoords [0 ..] b
     rowWithCoords y = zipWith (tileWithCoords y) [0 ..]
     tileWithCoords y x tile = ((x, y), tile)
 
--- Automatic Movement (usually a monster)
 return []
 
 main :: IO ()
