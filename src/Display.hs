@@ -4,6 +4,12 @@ module Display
 
 import Model
 
-changedLines :: Board -> Board -> [(Bool, [Tile])]
+changedLines :: Board -> Board -> [Maybe [Tile]]
 changedLines (Board before) (Board after) =
-    zipWith (\x y -> (x /= y, y)) before after
+    zipWith
+        (\x y ->
+             if x == y
+                 then Nothing
+                 else Just y)
+        before
+        after

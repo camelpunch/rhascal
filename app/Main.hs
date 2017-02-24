@@ -37,13 +37,13 @@ loop (Game turns@(previousTurn:_)) =
               printChanges $ changedLines previousTurn newTurn
               printTurns (newTurn : turns)
               loop $ Game (newTurn : turns)
-    ignore = loop (Game turns)
+    ignore = loop $ Game turns
 
-printChanges :: [(Bool, [Tile])] -> IO ()
+printChanges :: [Maybe [Tile]] -> IO ()
 printChanges = traverse_ put
   where
-    put (True, row) = putStrLn $ showRow row
-    put (False, _) = cursorDownLine 1
+    put (Just row) = putStrLn $ showRow row
+    put Nothing = cursorDownLine 1
 
 printTurns :: [Board] -> IO ()
 printTurns turns = do

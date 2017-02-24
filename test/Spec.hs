@@ -117,9 +117,9 @@ prop_BoardShowsWithLineBreaks =
 prop_DifferenceRepresentedByBoolean :: Property
 prop_DifferenceRepresentedByBoolean =
     changedLines before after ===
-    [ (False, [Wall, Wall])
-    , (True, [Grass Nothing, Grass Nothing])
-    , (True, [Grass Nothing, Grass (Just player)])
+    [ Nothing
+    , Just [Grass Nothing, Grass Nothing]
+    , Just [Grass Nothing, Grass (Just player)]
     ]
   where
     before =
@@ -159,7 +159,12 @@ numChanged seed width height direction =
     let before = generateBoard g width height
         after = nextTurn direction before
         g = mkStdGen seed
-    in length (filter fst $ changedLines before after)
+    in length (filter isChanged $ changedLines before after)
+  where
+    isChanged line =
+        case line of
+            Just _ -> True
+            Nothing -> False
 
 -- Logical board
 prop_ZeroHeightBoardIsEmpty :: Int -> Int -> Property
