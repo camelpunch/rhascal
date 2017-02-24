@@ -1,5 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
+import Data.Maybe
 import System.Exit hiding (die)
 import System.Random
 
@@ -159,12 +160,7 @@ numChanged seed width height direction =
     let before = generateBoard g width height
         after = nextTurn direction before
         g = mkStdGen seed
-    in length (filter isChanged $ changedLines before after)
-  where
-    isChanged line =
-        case line of
-            Just _ -> True
-            Nothing -> False
+    in length (catMaybes $ changedLines before after)
 
 -- Logical board
 prop_ZeroHeightBoardIsEmpty :: Int -> Int -> Property

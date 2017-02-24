@@ -28,6 +28,9 @@ loop (Game []) = do
     print board
     printTurns [board]
     loop game
+  where
+    width = 80
+    height = 20
 loop (Game turns@(previousTurn:_)) =
     getChar >>= maybe ignore process . requestFromKey
   where
@@ -38,20 +41,14 @@ loop (Game turns@(previousTurn:_)) =
               printTurns (newTurn : turns)
               loop $ Game (newTurn : turns)
     ignore = loop $ Game turns
-
-printChanges :: [Maybe [Tile]] -> IO ()
-printChanges = traverse_ put
-  where
-    put (Just row) = putStrLn $ showRow row
-    put Nothing = cursorDownLine 1
+    printChanges = traverse_ $ maybe (cursorDownLine 1) (putStrLn . showRow)
 
 printTurns :: [Board] -> IO ()
 printTurns turns = do
     setCursorPosition height 0
     putStrLn $ "Turn: " ++ show (length turns)
-
-width :: Int
-width = 80
-
-height :: Int
-height = 20
+  where
+    height =
+        case turns of
+            [] -> 0
+            (Board b:_) -> length b
