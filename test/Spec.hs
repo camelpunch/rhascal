@@ -128,7 +128,7 @@ prop_DifferenceRepresentedByBoolean =
             , [Grass Nothing, Grass (Just player)]
             , [Grass Nothing, Grass Nothing]
             ]
-    after = handleRequest MoveDown before
+    after = nextTurn MoveDown before
     player =
         Character
         { piece = Piece '@'
@@ -157,7 +157,7 @@ prop_MovingVerticallyChangesZeroOrTwoLines seed (Positive width) (Positive heigh
 numChanged :: Int -> Int -> Int -> Request -> Int
 numChanged seed width height direction =
     let before = generateBoard g width height
-        after = handleRequest direction before
+        after = nextTurn direction before
         g = mkStdGen seed
     in length (filter fst $ changedLines before after)
 
@@ -228,7 +228,7 @@ prop_MovingLeftMovesPlayerLeft seed (Positive width) (Positive height) =
     hasSpaceToMoveLeft before ==> playerX after === playerX before - 1
   where
     before = generateBoard g width height
-    after = handleRequest MoveLeft before
+    after = nextTurn MoveLeft before
     g = mkStdGen seed
 
 hasSpaceToMoveLeft :: Board -> Bool
@@ -245,7 +245,7 @@ prop_MovingUpMovesPlayerUp seed (Positive width) (Positive height) =
     hasSpaceToMoveUp before ==> playerY after === playerY before - 1
   where
     before = generateBoard g width height
-    after = handleRequest MoveUp before
+    after = nextTurn MoveUp before
     g = mkStdGen seed
 
 hasSpaceToMoveUp :: Board -> Bool

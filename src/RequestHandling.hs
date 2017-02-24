@@ -1,13 +1,13 @@
 module RequestHandling
-    ( handleRequest
+    ( nextTurn
     ) where
 
 import Data.List
 
 import Model
 
-handleRequest :: Request -> Board -> Board
-handleRequest request (Board b) =
+nextTurn :: Request -> Board -> Board
+nextTurn request (Board b) =
     Board $
     case request of
         MoveLeft -> left b

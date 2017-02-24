@@ -41,8 +41,7 @@ boardCounterexample before after =
 
 allDirections :: Board -> Board
 allDirections =
-    handleRequest MoveDown .
-    handleRequest MoveUp . handleRequest MoveRight . handleRequest MoveLeft
+    nextTurn MoveDown . nextTurn MoveUp . nextTurn MoveRight . nextTurn MoveLeft
 
 -- Dice
 newtype RiggedDie =

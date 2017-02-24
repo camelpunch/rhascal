@@ -28,17 +28,16 @@ loop (Game []) = do
     print board
     printTurns [board]
     loop game
-loop (Game turns@(x:_)) = do
-    key <- getChar
-    case requestFromKey key of
-        Nothing -> loop $ Game turns
-        Just request ->
-            let new = handleRequest request x
-                newTurns = new : turns
-            in do setCursorPosition 0 0
-                  printChanges $ changedLines x new
-                  printTurns newTurns
-                  loop $ Game newTurns
+loop (Game turns@(previousTurn:_)) =
+    getChar >>= maybe ignore process . requestFromKey
+  where
+    process request =
+        let newTurn = nextTurn request previousTurn
+        in do setCursorPosition 0 0
+              printChanges $ changedLines previousTurn newTurn
+              printTurns (newTurn : turns)
+              loop $ Game (newTurn : turns)
+    ignore = loop (Game turns)
 
 printChanges :: [(Bool, [Tile])] -> IO ()
 printChanges = traverse_ put
