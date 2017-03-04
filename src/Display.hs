@@ -1,11 +1,11 @@
 module Display
-    ( changedLines
+    ( changedRows
     ) where
 
 import Model
 
-changedLines :: Board -> Board -> [Maybe [Tile]]
-changedLines (Board before) (Board after) =
+changedRows :: Board -> Board -> [Maybe [Tile]]
+changedRows (Board before) (Board after) =
     zipWith
         (\x y ->
              if x == y

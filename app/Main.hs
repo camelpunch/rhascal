@@ -34,14 +34,17 @@ loop (Game []) = do
 loop (Game turns@(previousTurn:_)) =
     getChar >>= maybe ignore process . requestFromKey
   where
-    process request =
-        let newTurn = nextTurn request previousTurn
-        in do setCursorPosition 0 0
-              printChanges $ changedLines previousTurn newTurn
-              printTurns (newTurn : turns)
-              loop $ Game (newTurn : turns)
     ignore = loop $ Game turns
-    printChanges = traverse_ $ maybe (cursorDownLine 1) (putStrLn . showRow)
+    process request = do
+        setCursorPosition 0 0
+        printChanges $ changedRows previousTurn newTurn
+        printTurns (newTurn : turns)
+        loop $ Game (newTurn : turns)
+      where
+        newTurn = nextTurn request previousTurn
+    printChanges = traverse_ $ maybe skipRow printRow
+    skipRow = cursorDownLine 1
+    printRow = putStrLn . showRow
 
 printTurns :: [Board] -> IO ()
 printTurns turns = do
