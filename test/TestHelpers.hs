@@ -5,6 +5,10 @@ module TestHelpers
     , combine
     , arbitraryDie
     , forAllVisibleBoards
+    , hasSpaceToMoveLeft
+    , hasSpaceToMoveUp
+    , playerX
+    , playerY
     , rollsOf
     , attackRolls
     , damageRolls
@@ -42,6 +46,43 @@ boardCounterexample before after =
 allDirections :: Board -> Board
 allDirections =
     nextTurn MoveDown . nextTurn MoveUp . nextTurn MoveRight . nextTurn MoveLeft
+
+hasSpaceToMoveLeft :: Board -> Bool
+hasSpaceToMoveLeft board@(Board beforeTiles) =
+    visibleBoard width height &&
+    beforeTiles !! playerY board !! (playerX board - 1) == Grass Nothing
+  where
+    width = length beforeTiles
+    height = length (head beforeTiles ++ [])
+
+hasSpaceToMoveUp :: Board -> Bool
+hasSpaceToMoveUp board@(Board beforeTiles) =
+    visibleBoard width height &&
+    beforeTiles !! (playerY board - 1) !! playerX board == Grass Nothing
+  where
+    width = length beforeTiles
+    height = length (head beforeTiles ++ [])
+
+playerX :: Board -> Int
+playerX = fst . playerCoords
+
+playerY :: Board -> Int
+playerY = snd . playerCoords
+
+playerCoords :: Board -> Point
+playerCoords b = (x, y)
+  where
+    (((x, y), _):_) = (filter isCharacter . concat . tilesWithCoords) b
+
+isCharacter :: (Point, Tile) -> Bool
+isCharacter (_, Grass (Just _)) = True
+isCharacter _ = False
+
+tilesWithCoords :: Board -> [[(Point, Tile)]]
+tilesWithCoords (Board b) = zipWith rowWithCoords [0 ..] b
+  where
+    rowWithCoords y = zipWith (tileWithCoords y) [0 ..]
+    tileWithCoords y x tile = ((x, y), tile)
 
 -- Dice
 newtype RiggedDie =
