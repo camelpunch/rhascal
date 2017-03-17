@@ -31,7 +31,7 @@ battle attackDie damageDie (attacker:defender:_) =
   battleWithRolls (rollsOf attackDie) (rollsOf damageDie) [attacker, defender]
 
 battleWithRolls :: [Roll] -> [Roll] -> [Character] -> [Character]
-battleWithRolls attackRolls damageRolls (attacker:defender:_) =
+battleWithRolls (attackRoll:counterRoll:_) damageRolls (attacker:defender:_) =
   case action of
     Miss -> [damage damageRolls counterAction attacker, defender]
     Hit  -> [attacker, damage damageRolls action defender]
@@ -39,7 +39,6 @@ battleWithRolls attackRolls damageRolls (attacker:defender:_) =
   where
     action = combatAction attackRoll defender
     counterAction = combatAction counterRoll attacker
-    (attackRoll:counterRoll:_) = attackRolls
 battleWithRolls _ _ battlers = battlers
 
 combatAction :: Roll -> Defender -> CombatAction
