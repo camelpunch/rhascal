@@ -2,7 +2,7 @@ module Display
     ( changedRows
     ) where
 
-import Model
+import           Model
 
 changedRows :: Board -> Board -> [Maybe [Tile]]
 changedRows (Board before) (Board after) =

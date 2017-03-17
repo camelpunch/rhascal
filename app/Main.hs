@@ -1,15 +1,15 @@
 module Main where
 
-import Data.Foldable
-import System.Console.ANSI
-import System.IO
-import System.Random
+import           Data.Foldable
+import           System.Console.ANSI
+import           System.IO
+import           System.Random
 
-import Board
-import Display
-import Keyboard
-import Model
-import RequestHandling
+import           Board
+import           Display
+import           Keyboard
+import           Model
+import           RequestHandling
 
 main :: IO ()
 main = do
@@ -53,5 +53,5 @@ printTurns turns = do
   where
     height =
         case turns of
-            [] -> 0
+            []          -> 0
             (Board b:_) -> length b

@@ -6,7 +6,7 @@ module Dice
     , D20(..)
     ) where
 
-import System.Random
+import           System.Random
 
 type Roll = Int
 

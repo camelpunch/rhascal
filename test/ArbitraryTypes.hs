@@ -1,8 +1,8 @@
 module ArbitraryTypes where
 
-import Test.QuickCheck
+import           Test.QuickCheck
 
-import Model
+import           Model
 
 instance Arbitrary Character where
     arbitrary = do

@@ -2,9 +2,9 @@ module Board
     ( generateBoard
     ) where
 
-import System.Random
+import           System.Random
 
-import Model
+import           Model
 
 generateBoard :: StdGen -> Int -> Int -> Board
 generateBoard g width height

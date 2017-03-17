@@ -11,8 +11,8 @@ module Combat
     , module Model
     ) where
 
-import Dice
-import Model
+import           Dice
+import           Model
 
 type Attacker = Character
 
@@ -37,8 +37,8 @@ battleWithRolls :: [Roll] -> [Roll] -> [Character] -> [Character]
 battleWithRolls attackRolls damageRolls (attacker:defender:_) =
     case action of
         Miss -> [damage damageRolls counterAction attacker, defender]
-        Hit -> [attacker, damage damageRolls action defender]
-        _ -> [attacker, defender]
+        Hit  -> [attacker, damage damageRolls action defender]
+        _    -> [attacker, defender]
   where
     action = combatAction attackRoll defender
     counterAction = combatAction counterRoll attacker

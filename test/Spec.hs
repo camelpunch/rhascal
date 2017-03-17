@@ -1,19 +1,19 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-import Data.Maybe
-import System.Exit hiding (die)
-import System.Random
+import           Data.Maybe
+import           System.Exit     hiding (die)
+import           System.Random
 
-import Test.QuickCheck
+import           Test.QuickCheck
 
-import Board
-import Combat
-import Dice
-import Display
-import RequestHandling
+import           Board
+import           Combat
+import           Dice
+import           Display
+import           RequestHandling
 
-import ArbitraryTypes ()
-import TestHelpers
+import           ArbitraryTypes  ()
+import           TestHelpers
 
 -- Dice
 prop_d4WithinRange :: Int -> Int -> Bool
@@ -193,9 +193,9 @@ prop_NonPlayerTilesStartEmpty =
         let countEmpties = length . filter isEmptyTile
             isEmptyTile tile =
                 case tile of
-                    Wall -> False
+                    Wall           -> False
                     Grass (Just _) -> False
-                    Grass Nothing -> True
+                    Grass Nothing  -> True
             height = length rows
             width = length $ head rows
             totalTiles = (width - 2) * (height - 2)
@@ -207,9 +207,9 @@ prop_SinglePlayerSpawned =
         let countPlayers = length . filter isPlayer
             isPlayer tile =
                 case tile of
-                    Wall -> False
+                    Wall              -> False
                     Grass (Just char) -> piece char == Piece '@'
-                    Grass Nothing -> False
+                    Grass Nothing     -> False
         in countPlayers (concat rows) === 1
 
 -- Manual Movement (usually a player)

@@ -15,13 +15,13 @@ module TestHelpers
     , visibleBoard
     ) where
 
-import Board
-import Dice
-import Model
-import RequestHandling
+import           Board
+import           Dice
+import           Model
+import           RequestHandling
 
-import System.Random
-import Test.QuickCheck
+import           System.Random
+import           Test.QuickCheck
 
 -- QuickCheck
 combine
@@ -76,7 +76,7 @@ playerCoords b = (x, y)
 
 isCharacter :: (Point, Tile) -> Bool
 isCharacter (_, Grass (Just _)) = True
-isCharacter _ = False
+isCharacter _                   = False
 
 tilesWithCoords :: Board -> [[(Point, Tile)]]
 tilesWithCoords (Board b) = zipWith rowWithCoords [0 ..] b

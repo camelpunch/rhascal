@@ -26,8 +26,8 @@ newtype ArmourClass =
 type Point = (Int, Int)
 
 data Character = Character
-    { piece :: Piece
-    , hitPoints :: HitPoints
+    { piece       :: Piece
+    , hitPoints   :: HitPoints
     , armourClass :: ArmourClass
     } deriving (Eq, Show)
 
