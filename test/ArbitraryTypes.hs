@@ -13,8 +13,8 @@ instance Arbitrary Character where
     Positive ac <- arbitrary
     c <- arbitrary
     return Character
-      { hitPoints = HitPoints hp
-      , armourClass = ArmourClass ac
+      { hitPoints = hp
+      , armourClass = ac
       , piece = Piece c
       }
 

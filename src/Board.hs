@@ -40,7 +40,7 @@ horzWall width = replicate width Wall
 newPlayer :: Character
 newPlayer =
     Character
-    {piece = Piece '@', hitPoints = HitPoints 1, armourClass = ArmourClass 1}
+    {piece = Piece '@', hitPoints = 1, armourClass = 1}
 
 internal :: Int -> Int
 internal n = n - 2

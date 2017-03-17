@@ -31,8 +31,8 @@ spec = do
         aft = nextTurn MoveDown bef
         player = Character
           { piece = Piece '@'
-          , hitPoints = HitPoints 1
-          , armourClass = ArmourClass 1
+          , hitPoints = 1
+          , armourClass = 1
           }
     in  changedRows bef aft === [ Nothing
                                 , Just [Grass Nothing, Grass Nothing]

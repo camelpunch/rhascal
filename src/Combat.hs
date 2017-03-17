@@ -46,18 +46,18 @@ combatAction roll defender
   | roll == missRoll = Miss
   | roll == criticalHitRoll = CriticalHit
   | roll > criticalHitRoll = Invalid
-  | ArmourClass roll >= armourClass defender = Hit
+  | roll >= armourClass defender = Hit
   | otherwise = Miss
 
 damage :: [Roll] -> CombatAction -> Defender -> Defender
 damage (roll:_) Hit x =
-  x {hitPoints = HitPoints (initial - roll)}
+  x {hitPoints = initial - roll}
   where
-    HitPoints initial = hitPoints x
+    initial = hitPoints x
 damage (roll1:roll2:_) CriticalHit x =
-  x {hitPoints = HitPoints (initial - roll1 - roll2)}
+  x {hitPoints = initial - roll1 - roll2}
   where
-    HitPoints initial = hitPoints x
+    initial = hitPoints x
 damage [] _ x = x
 damage [_] CriticalHit x = x
 damage _ Miss x = x

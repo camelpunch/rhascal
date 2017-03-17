@@ -1,7 +1,7 @@
 module Model
-    ( ArmourClass(..)
+    ( ArmourClass
     , Character(..)
-    , HitPoints(..)
+    , HitPoints
     , Piece(..)
     , Point
     , Game(..)
@@ -14,12 +14,8 @@ module Model
 newtype Piece = Piece Char
   deriving (Eq, Show)
 
-newtype HitPoints = HitPoints Int
-  deriving (Eq, Show, Ord)
-
-newtype ArmourClass = ArmourClass Int
-  deriving (Eq, Show, Ord)
-
+type HitPoints = Int
+type ArmourClass = Int
 type Point = (Int, Int)
 
 data Character = Character

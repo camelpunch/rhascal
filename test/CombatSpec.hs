@@ -22,23 +22,23 @@ spec = do
 
     specify "2-19 is a hit if at least equals target armour class" $ property $ \x ->
       forAll attackRolls $ \n ->
-        ArmourClass n >= armourClass x ==> combatAction n x === Hit
+        n >= armourClass x ==> combatAction n x === Hit
 
     specify "2-19 is a miss if less than target armour class" $ property $ \x ->
       forAll attackRolls $ \n ->
-        ArmourClass n < armourClass x ==> combatAction n x === Miss
+        n < armourClass x ==> combatAction n x === Miss
 
     specify "21+ is invalid" $ property $ \x ->
       forAll (choose (21, 10000)) $ \n -> combatAction n x === Invalid
 
   describe "damaging a character" $ do
     specify "hit causes damage" $ property $ \x ->
-      let HitPoints initial = hitPoints x
-      in  hitPoints (damage [10, 1] Hit x) === HitPoints (initial - 10)
+      let initial = hitPoints x
+      in  hitPoints (damage [10, 1] Hit x) === initial - 10
 
     specify "critical hit causes two rolls of damage" $ property $ \x ->
-      let HitPoints initial = hitPoints x
-      in  hitPoints (damage [5, 10, 999] CriticalHit x) === HitPoints (initial - 15)
+      let initial = hitPoints x
+      in  hitPoints (damage [5, 10, 999] CriticalHit x) === initial - 15
 
     specify "no damage on miss or invalid" $ property $ \x rolls ->
       forAll (elements [Miss, Invalid]) $ \l ->
@@ -54,15 +54,15 @@ spec = do
         let attackDie = RiggedDie [attackRoll, 1]
             damageDie = RiggedDie [damageRoll]
             [_, defenderAfter] = battle attackDie damageDie [attacker, defender]
-            HitPoints hp = hitPoints defender
-            HitPoints hp' = hitPoints defenderAfter
-        in  ArmourClass attackRoll >= armourClass defender ==>
+            hp = hitPoints defender
+            hp' = hitPoints defenderAfter
+        in  attackRoll >= armourClass defender ==>
               hp' === hp - damageRoll
 
     specify "defender counters when attacker misses" $ property $ \attacker defender ->
-      let HitPoints hp = hitPoints attacker
-          HitPoints hp' = hitPoints attackerAfter
-          ArmourClass attackerArmour = armourClass attacker
+      let hp = hitPoints attacker
+          hp' = hitPoints attackerAfter
+          attackerArmour = armourClass attacker
           counterDamage = 4
           counterRoll = attackerArmour
           attackDie = RiggedDie [missRoll, counterRoll]
@@ -76,6 +76,6 @@ spec = do
           attackDie = RiggedDie [missRoll, criticalHitRoll]
           damageDie = RiggedDie counterDamage
           [attackerAfter, _] = battle attackDie damageDie [attacker, defender]
-          HitPoints hp = hitPoints attacker
-          HitPoints hpAfter = hitPoints attackerAfter
+          hp = hitPoints attacker
+          hpAfter = hitPoints attackerAfter
       in  hpAfter === hp - sum counterDamage
