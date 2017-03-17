@@ -17,14 +17,12 @@ generateBoardWithContent :: StdGen -> Int -> Int -> Board
 generateBoardWithContent g width height =
   Board $ [horzWall width] ++ rows ++ [horzWall width]
   where
-    row y =
-      [Wall] ++
-      take
-          (internal width)
-          (rowItems (choosePlayerPoint (internal width) (internal height)) y) ++
-      [Wall]
+    row y = [Wall] ++ internalRow y ++ [Wall]
+    internalRow y =
+      take (internal width)
+           (rowItems (choosePlayerPoint (internal width) (internal height)) y)
     rows = map row [1 .. internal height]
-    rowItems playerPoint y = map (\x -> newTile playerPoint (x, y)) [1 ..]
+    rowItems playerPoint y = map (\x -> newTile playerPoint (x, y)) [1..]
     newTile playerPoint candidatePoint =
       if playerPoint == candidatePoint
         then Grass (Just newPlayer)
@@ -38,9 +36,9 @@ horzWall :: Int -> [Tile]
 horzWall width = replicate width Wall
 
 newPlayer :: Character
-newPlayer =
-    Character
-    {piece = Piece '@', hitPoints = 1, armourClass = 1}
+newPlayer = Character { piece = Piece '@'
+                      , hitPoints = 1
+                      , armourClass = 1}
 
 internal :: Int -> Int
 internal n = n - 2

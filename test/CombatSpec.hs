@@ -65,7 +65,7 @@ spec = do
           attackerArmour = armourClass attacker
           counterDamage = 4
           counterRoll = attackerArmour
-          attackDie = RiggedDie [missRoll, counterRoll]
+          attackDie = RiggedDie [1, counterRoll]
           damageDie = RiggedDie [counterDamage]
           [attackerAfter, _] = battle attackDie damageDie [attacker, defender]
       in  attackerArmour > 1 && attackerArmour < 20 ==>
@@ -73,7 +73,7 @@ spec = do
 
     specify "defender gets two counters on critical hit" $ property $ \attacker defender ->
       let counterDamage = [4, 5]
-          attackDie = RiggedDie [missRoll, criticalHitRoll]
+          attackDie = RiggedDie [1, 20]
           damageDie = RiggedDie counterDamage
           [attackerAfter, _] = battle attackDie damageDie [attacker, defender]
           hp = hitPoints attacker
