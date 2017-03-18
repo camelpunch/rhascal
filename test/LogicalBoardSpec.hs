@@ -45,9 +45,4 @@ spec = do
   specify "only one player is spawned" $
     forAllVisibleBoards $ \(Board rows) ->
       let countPlayers = length . filter isPlayer
-          isPlayer tile =
-            case tile of
-              Wall              -> False
-              Grass Nothing     -> False
-              Grass (Just char) -> piece char == Piece '@'
       in  countPlayers (concat rows) === 1

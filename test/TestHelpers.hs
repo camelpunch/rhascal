@@ -7,6 +7,7 @@ module TestHelpers
     , forAllVisibleBoards
     , hasSpaceToMoveLeft
     , hasSpaceToMoveUp
+    , isPlayer
     , playerX
     , playerY
     , rollsOf
@@ -62,6 +63,13 @@ hasSpaceToMoveUp board@(Board beforeTiles) =
   where
     width = length beforeTiles
     height = length (head beforeTiles ++ [])
+
+isPlayer :: Tile -> Bool
+isPlayer tile =
+  case tile of
+    Wall              -> False
+    Grass Nothing     -> False
+    Grass (Just char) -> piece char == Piece '@'
 
 playerX :: Board -> Int
 playerX = fst . playerCoords
