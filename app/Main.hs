@@ -13,10 +13,10 @@ import           RequestHandling
 
 main :: IO ()
 main = do
-    hSetEcho stdin False
-    hSetBuffering stdin NoBuffering
-    showCursor
-    loop $ Game []
+  hSetEcho stdin False
+  hSetBuffering stdin NoBuffering
+  showCursor
+  loop $ Game []
 
 loop :: Game -> IO ()
 loop (Game []) = do
@@ -54,6 +54,7 @@ printTurns turns = do
   setCursorPosition height 0
   putStrLn $ "Turn: " ++ show (length turns)
   where
-    height = case turns of
-              []          -> 0
-              (Board b:_) -> length b
+    height =
+      case turns of
+        []          -> 0
+        (Board b:_) -> length b
