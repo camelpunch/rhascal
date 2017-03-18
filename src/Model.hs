@@ -1,6 +1,8 @@
 module Model
     ( ArmourClass
     , Character(..)
+    , Attacker
+    , Defender
     , HitPoints
     , Piece(..)
     , Point
@@ -17,6 +19,9 @@ newtype Piece = Piece Char
 type HitPoints = Int
 type ArmourClass = Int
 type Point = (Int, Int)
+
+type Attacker = Character
+type Defender = Character
 
 data Character = Character
   { piece       :: Piece

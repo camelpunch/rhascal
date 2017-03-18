@@ -38,8 +38,9 @@ moveBack processed first second rest =
   where
     stop = processed ++ [first, second] ++ rest
     swap = processed ++ [second, first] ++ rest
-    nextPair = case rest of
-                 [] -> stop
-                 [_] -> stop
-                 (second':rest') ->
-                   moveBack (processed ++ [first]) second second' rest'
+    recur = moveBack (processed ++ [first]) second
+    nextPair =
+      case rest of
+        []                  -> stop
+        [_]                 -> stop
+        (newSecond:newRest) -> recur newSecond newRest

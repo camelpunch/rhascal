@@ -18,6 +18,7 @@ library
   exposed-modules:     Model
                      , Board
                      , Combat
+                     , Damage
                      , Dice
                      , Display
                      , Keyboard
@@ -44,6 +45,7 @@ test-suite rhascal-test
                      , TestHelpers
                      , BoardDisplaySpec
                      , CombatSpec
+                     , DamageSpec
                      , DiceSpec
                      , LogicalBoardSpec
                      , MovementSpec
