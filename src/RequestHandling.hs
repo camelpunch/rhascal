@@ -36,8 +36,8 @@ moveBack processed first second rest =
     (Grass Nothing, Grass Nothing)  -> nextPair
     (Grass Nothing, Grass (Just _)) -> swap
   where
-    stop = processed ++ [first, second] ++ rest
-    swap = processed ++ [second, first] ++ rest
+    stop = processed ++ (first:second:rest)
+    swap = processed ++ (second:first:rest)
     recur = moveBack (processed ++ [first]) second
     nextPair =
       case rest of
