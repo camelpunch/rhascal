@@ -30,7 +30,7 @@ combine
     => Gen a -> Gen a -> (a -> a -> Property) -> Property
 combine x y f = forAll x $ \n -> forAll y $ \m -> f n m
 
-forAllVisibleBoards :: (Board -> Property) -> Property
+forAllVisibleBoards :: Testable a => (Board -> a) -> Property
 forAllVisibleBoards f =
     forAll (choose (1, 1000)) $ \seed ->
         forAll (choose (3, 50)) $ \width ->
