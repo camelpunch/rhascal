@@ -19,18 +19,25 @@ generateBoardWithContent g width height =
   where
     row y = [Wall] ++ internalRow y ++ [Wall]
     internalRow y =
-      take (internal width)
-           (rowItems (choosePlayerPoint (internal width) (internal height)) y)
+      take (internal width) $
+           rowItems (choosePlayerPoint g (internal width) (internal height))
+                     y
     rows = map row [1 .. internal height]
-    rowItems playerPoint y = map (\x -> newTile playerPoint (x, y)) [1..]
-    newTile playerPoint candidatePoint =
-      if playerPoint == candidatePoint
+
+choosePlayerPoint :: StdGen -> Int -> Int -> Point
+choosePlayerPoint g w h = (playerX, playerY)
+  where
+    (playerX, g') = randomR (1, w) g
+    (playerY, _) = randomR (1, h) g'
+
+rowItems :: Point -> Int -> [Tile]
+rowItems playerPoint y =
+  map (\x -> newTile playerPoint (x, y)) [1..]
+  where
+    newTile point candidatePoint =
+      if point == candidatePoint
         then Grass (Just newPlayer)
         else Grass Nothing
-    choosePlayerPoint w h = (playerX, playerY)
-      where
-        (playerX, g') = randomR (1, w) g
-        (playerY, _) = randomR (1, h) g'
 
 horzWall :: Int -> [Tile]
 horzWall width = replicate width Wall
