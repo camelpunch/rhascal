@@ -19,6 +19,4 @@ instance Arbitrary Character where
       }
 
 instance Arbitrary StdGen where
-  arbitrary = do
-    n <- arbitrary
-    return $ mkStdGen n
+  arbitrary = fmap mkStdGen arbitrary
