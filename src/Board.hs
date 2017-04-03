@@ -21,7 +21,7 @@ generateBoardWithContent g width height =
     internalRow y =
       take (internal width) $
            rowItems (choosePlayerPoint g (internal width) (internal height))
-                     y
+                    y
     rows = map row [1 .. internal height]
 
 choosePlayerPoint :: StdGen -> Int -> Int -> Point
