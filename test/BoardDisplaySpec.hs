@@ -19,8 +19,8 @@ main = hspec spec
 spec :: Spec
 spec = do
   it "shows with line breaks" $
-    forAllVisibleBoards $ \board@(Board rows) ->
-      length (lines (show board)) === length rows
+    forAllVisibleBoards $ \board ->
+      length (lines (show board)) === height board
 
   it "can represent diffs with maybe values" $
     let bef = Board
