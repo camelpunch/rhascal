@@ -90,10 +90,12 @@ count :: (Tile -> Bool) -> Board -> Int
 count f = length . filter f . tiles
 
 width :: Board -> Int
-width (Board rows) = length rows
+width (Board rows) = case uncons rows of
+  Nothing     -> 0
+  Just (h, _) -> length h
 
 height :: Board -> Int
-height (Board rows) = length $ head rows
+height (Board rows) = length rows
 
 tiles :: Board -> [Tile]
 tiles (Board rows) = concat rows
