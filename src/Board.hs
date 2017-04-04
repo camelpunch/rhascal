@@ -1,5 +1,8 @@
 module Board
   ( generateBoard
+  , count
+  , width
+  , height
   ) where
 
 import           System.Random
@@ -7,22 +10,22 @@ import           System.Random
 import           Model
 
 generateBoard :: StdGen -> Int -> Int -> Board
-generateBoard g width height
-  | internal width >= 1 && internal height >= 1
-  = generateBoardWithContent g width height
+generateBoard g w h
+  | internal w >= 1 && internal h >= 1
+  = generateBoardWithContent g w h
   | otherwise
-  = Board $ replicate height $ replicate width Wall
+  = Board $ replicate h $ replicate w Wall
 
 generateBoardWithContent :: StdGen -> Int -> Int -> Board
-generateBoardWithContent g width height =
-  Board $ [horzWall width] ++ rows ++ [horzWall width]
+generateBoardWithContent g w h =
+  Board $ [horzWall w] ++ rows ++ [horzWall w]
   where
     row y = [Wall] ++ internalRow y ++ [Wall]
     internalRow y =
-      take (internal width) $
-           rowItems (choosePlayerPoint g (internal width) (internal height))
+      take (internal w) $
+           rowItems (choosePlayerPoint g (internal w) (internal h))
                     y
-    rows = map row [1 .. internal height]
+    rows = map row [1 .. internal h]
 
 choosePlayerPoint :: StdGen -> Int -> Int -> Point
 choosePlayerPoint g w h = (playerX, playerY) where
@@ -37,8 +40,20 @@ rowItems playerPoint y = map newTile [1..] where
     | otherwise
     = Grass Nothing
 
+count :: (Tile -> Bool) -> Board -> Int
+count f = length . filter f . tiles
+
+width :: Board -> Int
+width (Board rows) = length rows
+
+height :: Board -> Int
+height (Board rows) = length $ head rows
+
+tiles :: Board -> [Tile]
+tiles (Board rows) = concat rows
+
 horzWall :: Int -> [Tile]
-horzWall width = replicate width Wall
+horzWall w = replicate w Wall
 
 newPlayer :: Character
 newPlayer = Character { piece = Piece '@'

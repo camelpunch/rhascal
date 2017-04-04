@@ -30,19 +30,15 @@ spec = do
     in  firstColumn === wall .&&. lastColumn === wall
 
   specify "non-player tiles start empty" $
-    forAllVisibleBoards $ \(Board rows) ->
-      let countEmpties = length . filter isEmptyTile
-          isEmptyTile tile =
+    forAllVisibleBoards $ \b ->
+      let isEmptyTile tile =
             case tile of
               Wall           -> False
               Grass (Just _) -> False
               Grass Nothing  -> True
-          h = length rows
-          w = length $ head rows
-          totalTiles = (w - 2) * (h - 2)
-      in  countEmpties (concat rows) === totalTiles - 1
+          totalTiles = (width b - 2) * (height b - 2)
+      in  count isEmptyTile b === totalTiles - 1
 
   specify "only one player is spawned" $
-    forAllVisibleBoards $ \(Board rows) ->
-      let countPlayers = length . filter isPlayer
-      in  countPlayers (concat rows) === 1
+    forAllVisibleBoards $ \b ->
+      count isPlayer b === 1

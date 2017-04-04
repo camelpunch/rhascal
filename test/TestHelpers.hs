@@ -33,10 +33,10 @@ combine x y f = forAll x $ \n -> forAll y $ \m -> f n m
 forAllVisibleBoards :: Testable a => (Board -> a) -> Property
 forAllVisibleBoards f =
     forAll (choose (1, 1000)) $ \seed ->
-        forAll (choose (3, 50)) $ \width ->
-            forAll (choose (3, 50)) $ \height ->
+        forAll (choose (3, 50)) $ \w ->
+            forAll (choose (3, 50)) $ \h ->
                 let g = mkStdGen seed
-                in f $ generateBoard g width height
+                in f $ generateBoard g w h
 
 -- Board
 boardCounterexample :: Board -> Board -> Property -> Property
@@ -50,19 +50,13 @@ allDirections =
 
 hasSpaceToMoveLeft :: Board -> Bool
 hasSpaceToMoveLeft board@(Board beforeTiles) =
-    visibleBoard width height &&
+    visibleBoard (width board) (height board) &&
     beforeTiles !! playerY board !! (playerX board - 1) == Grass Nothing
-  where
-    width = length beforeTiles
-    height = length (head beforeTiles ++ [])
 
 hasSpaceToMoveUp :: Board -> Bool
 hasSpaceToMoveUp board@(Board beforeTiles) =
-    visibleBoard width height &&
+    visibleBoard (width board) (height board) &&
     beforeTiles !! (playerY board - 1) !! playerX board == Grass Nothing
-  where
-    width = length beforeTiles
-    height = length (head beforeTiles ++ [])
 
 isPlayer :: Tile -> Bool
 isPlayer tile =

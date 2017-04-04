@@ -22,15 +22,15 @@ loop :: Game -> IO ()
 loop (Game []) = do
   g <- getStdGen
   clearScreen
-  let board = generateBoard g width height
+  let board = generateBoard g w h
       game = Game [board]
   setCursorPosition 0 0
   print board
   printTurns [board]
   loop game
   where
-    width = 80
-    height = 20
+    w = 80
+    h = 20
 loop (Game turns@(previousTurn:_)) =
   getChar >>= maybe ignore process . requestFromKey
   where
@@ -51,10 +51,10 @@ printChanges = traverse_ $ maybe skipRow printRow
 
 printTurns :: [Board] -> IO ()
 printTurns turns = do
-  setCursorPosition height 0
+  setCursorPosition h 0
   putStrLn $ "Turn: " ++ show (length turns)
   where
-    height =
+    h =
       case turns of
-        []          -> 0
-        (Board b:_) -> length b
+        []    -> 0
+        (b:_) -> height b
