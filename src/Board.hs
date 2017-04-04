@@ -31,16 +31,16 @@ generateBoard g w h = Board generateRows where
 
   internalRow y =
     take (internal w) $
-         rowItems chosenPlayerCoords y
+         rowItems y
 
-  rowItems playerCoords y = map newTile [1..] where
+  rowItems y = map newTile [1..] where
     newTile x
       | (x, y) == playerCoords
       = Grass (Just newPlayer)
       | otherwise
       = Grass Nothing
 
-  chosenPlayerCoords = (x, y) where
+  playerCoords = (x, y) where
     (x, g') = randomR (1, internal w) g
     (y, _g) = randomR (1, internal h) g'
 
