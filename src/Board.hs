@@ -29,9 +29,7 @@ generateBoard g w h = Board generateRows where
 
   row y = [Wall] ++ internalRow y ++ [Wall]
 
-  internalRow y =
-    take (internal w) $
-         rowItems y
+  internalRow y = take (internal w) (rowItems y)
 
   rowItems y = map newTile [1..] where
     newTile x
@@ -81,7 +79,6 @@ moveBackOnAxis f xs =
     [_]     -> xs
     (x:y:t) -> moveBack [] x y t
   where
-    moveBack :: [Tile] -> Tile -> Tile -> [Tile] -> [Tile]
     moveBack processed first second rest =
       case (first, second) of
         (_, Wall)                       -> stop
