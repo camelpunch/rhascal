@@ -29,11 +29,6 @@ spec = do
           , [Grass Nothing, Grass Nothing]
           ]
         aft = nextTurn MoveDown bef
-        player = Character
-          { piece = Piece '@'
-          , hitPoints = 1
-          , armourClass = 1
-          }
     in  changedRows bef aft === [ Nothing
                                 , Just [Grass Nothing, Grass Nothing]
                                 , Just [Grass Nothing, Grass (Just player)]

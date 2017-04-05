@@ -39,11 +39,7 @@ spawnPlayer _ b@(Board ([_]:_)) = b
 spawnPlayer g b = setTile playerTile (x, y) b where
   (x, g') = randomR (1, internal $ width b) g
   (y, _)  = randomR (1, internal $ height b) g'
-
-  playerTile = Grass $
-    Just Character { piece = Piece '@'
-                   , hitPoints = 1
-                   , armourClass = 1}
+  playerTile = Grass $ Just player
 
 setTile :: Tile -> (Int, Int) -> Board -> Board
 setTile t (x, y) (Board rows) =

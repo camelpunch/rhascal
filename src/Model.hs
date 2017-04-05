@@ -10,6 +10,7 @@ module Model
     , Board(..)
     , Tile(..)
     , Request(..)
+    , player
     , showRow
     ) where
 
@@ -36,16 +37,6 @@ instance Show Board where
   show (Board board) =
     foldl (\output row -> output ++ showRow row ++ "\n") "" board
 
-showRow :: [Tile] -> String
-showRow = map tile2char
-
-tile2char :: Tile -> Char
-tile2char Wall = '#'
-tile2char (Grass Nothing) = '.'
-tile2char (Grass (Just character)) = piece2char $ piece character
-  where
-    piece2char (Piece char) = char
-
 data Tile
   = Grass (Maybe Character)
   | Wall
@@ -58,3 +49,18 @@ data Request
   | MoveRight
   | DoNothing
   deriving (Show)
+
+player :: Character
+player = Character { piece = Piece '@'
+                   , hitPoints = 1
+                   , armourClass = 1}
+
+showRow :: [Tile] -> String
+showRow = map tile2char
+
+tile2char :: Tile -> Char
+tile2char Wall = '#'
+tile2char (Grass Nothing) = '.'
+tile2char (Grass (Just character)) = piece2char $ piece character
+  where
+    piece2char (Piece char) = char
