@@ -1,18 +1,18 @@
 module TestHelpers
-    ( RiggedDie(..)
-    , allDirections
-    , boardCounterexample
-    , arbitraryDie
-    , forAllVisibleBoards
-    , hasSpaceToMoveLeft
-    , hasSpaceToMoveUp
-    , playerX
-    , playerY
-    , rollsOf
-    , attackRolls
-    , damageRolls
-    , visibleBoard
-    ) where
+  ( RiggedDie(..)
+  , allDirections
+  , boardCounterexample
+  , arbitraryDie
+  , forAllVisibleBoards
+  , hasSpaceToMoveLeft
+  , hasSpaceToMoveUp
+  , playerX
+  , playerY
+  , rollsOf
+  , attackRolls
+  , damageRolls
+  , visibleBoard
+  ) where
 
 import           Board
 import           Dice
