@@ -8,10 +8,8 @@ import           Model
 nextTurn :: Request -> Board -> Board
 nextTurn request b =
   case request of
-    MoveLeft  -> left isPlayer b
-    MoveRight -> right isPlayer b
-    MoveUp    -> up isPlayer b
-    MoveDown  -> down isPlayer b
+    MoveLeft  -> left  (== player) b
+    MoveRight -> right (== player) b
+    MoveUp    -> up    (== player) b
+    MoveDown  -> down  (== player) b
     DoNothing -> b
-  where
-    isPlayer c = piece c == Piece '@'

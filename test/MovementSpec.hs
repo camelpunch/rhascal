@@ -18,19 +18,19 @@ spec =
   describe "manual movement (usually a player)" $ do
     specify "movement in every direction ends back at start" $
       property $ \g -> forAllVisibleBoards $ \b ->
-        let bef = spawnPlayer g b
+        let bef = spawn g player b
             aft = allDirections bef
         in  hasSpaceToMoveLeft bef && hasSpaceToMoveUp bef ==>
             bef === aft
 
     specify "moving left moves player left" $ property $ \g (Positive w) (Positive h) ->
-      let bef = spawnPlayer g $ generateBoard w h
+      let bef = spawn g player $ generateBoard w h
           aft = nextTurn MoveLeft bef
       in  boardCounterexample bef aft $ hasSpaceToMoveLeft bef ==>
           playerX aft === playerX bef - 1
 
     specify "moving up moves player up" $ property $ \g (Positive w) (Positive h) ->
-      let bef = spawnPlayer g $ generateBoard w h
+      let bef = spawn g player $ generateBoard w h
           aft = nextTurn MoveUp bef
       in  boardCounterexample bef aft $ hasSpaceToMoveUp bef ==>
           playerY aft === playerY bef - 1

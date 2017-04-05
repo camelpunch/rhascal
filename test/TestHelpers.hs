@@ -60,7 +60,7 @@ isPlayer tile =
   case tile of
     Wall              -> False
     Grass Nothing     -> False
-    Grass (Just char) -> piece char == Piece '@'
+    Grass (Just char) -> char == player
 
 playerX :: Board -> Int
 playerX = fst . playerCoords

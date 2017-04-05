@@ -55,4 +55,4 @@ spec = do
 
   specify "a player can be spawned" $ property $ \g ->
     forAllVisibleBoards $ \b ->
-      count isPlayer (spawnPlayer g b) === 1
+      count isPlayer (spawn g player b) === 1

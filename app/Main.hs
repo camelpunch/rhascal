@@ -21,7 +21,7 @@ main = do
 loop :: Game -> IO ()
 loop (Game []) = do
   g <- getStdGen
-  let board = spawnPlayer g $ generateBoard w h
+  let board = spawn g player $ generateBoard w h
       game = Game [board]
   clearScreen
   setCursorPosition 0 0

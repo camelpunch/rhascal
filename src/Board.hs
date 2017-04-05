@@ -1,6 +1,6 @@
 module Board
   ( generateBoard
-  , spawnPlayer
+  , spawn
   , count
   , width
   , height
@@ -33,13 +33,12 @@ generateBoard w h = Board generateRows where
 
   internalRow = replicate (internal w) $ Grass Nothing
 
-spawnPlayer :: StdGen -> Board -> Board
-spawnPlayer _ b@(Board [_]) = b
-spawnPlayer _ b@(Board ([_]:_)) = b
-spawnPlayer g b = setTile playerTile (x, y) b where
-  (x, g') = randomR (1, internal $ width b) g
-  (y, _)  = randomR (1, internal $ height b) g'
-  playerTile = Grass $ Just player
+spawn :: StdGen -> Character -> Board -> Board
+spawn _ _ b@(Board [_]) = b
+spawn _ _ b@(Board ([_]:_)) = b
+spawn g c b = setTile (Grass $ Just c) (x, y) b where
+  (x, g') = randomR (1, internal $ width  b) g
+  (y, _ ) = randomR (1, internal $ height b) g'
 
 setTile :: Tile -> (Int, Int) -> Board -> Board
 setTile t (x, y) (Board rows) =
