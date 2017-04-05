@@ -3,6 +3,8 @@ module LogicalBoardSpec ( main, spec ) where
 import           Test.Hspec
 import           Test.QuickCheck
 
+import           Data.Function
+
 import           ArbitraryTypes  ()
 import           TestHelpers
 
@@ -53,6 +55,13 @@ spec = do
           totalTiles = (width b - 2) * (height b - 2)
       in  count isEmptyTile b === totalTiles
 
-  specify "a character can be spawned" $ property $ \g ->
-    forAllVisibleBoards $ \b ->
-      count (== (Grass $ Just player)) (spawn g player b) === 1
+  describe "spawning" $ do
+    let numPlayers = count (== (Grass $ Just player))
+
+    specify "a character can be spawned" $
+      property $ \g -> forAllVisibleBoards $ \b ->
+        numPlayers (spawn g player b) === 1
+
+    specify "characters are never spawned on top of each other" $
+      property $ \g g' -> forAllVisibleBoards $ \b ->
+        numPlayers (b & spawn g player & spawn g' player) === 2

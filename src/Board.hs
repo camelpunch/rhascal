@@ -11,7 +11,7 @@ module Board
   ) where
 
 import           Data.List
-import           Data.Matrix   (fromLists, setElem, toLists)
+import           Data.Matrix   (fromLists, getElem, setElem, toLists)
 import           System.Random
 
 import           Model
@@ -36,11 +36,21 @@ generateBoard w h = Board generateRows where
 spawn :: StdGen -> Character -> Board -> Board
 spawn _ _ b@(Board [_]) = b
 spawn _ _ b@(Board ([_]:_)) = b
-spawn g c b = setTile (Grass $ Just c) (x, y) b where
-  (x, g') = randomR (1, internal $ width  b) g
-  (y, _ ) = randomR (1, internal $ height b) g'
+spawn g c b =
+  case getTile (x, y) b of
+    Wall           -> b
+    Grass (Just _) -> tryAgain
+    Grass Nothing  -> setTile (Grass $ Just c) (x, y) b
+  where
+    (x, g') = randomR (1, internal $ width  b) g
+    (y, _ ) = randomR (1, internal $ height b) g'
+    tryAgain = spawn (snd $ next g) c b
 
-setTile :: Tile -> (Int, Int) -> Board -> Board
+getTile :: Point -> Board -> Tile
+getTile (x, y) (Board rows) =
+  getElem (y + 1) (x + 1) (fromLists rows)
+
+setTile :: Tile -> Point -> Board -> Board
 setTile t (x, y) (Board rows) =
   Board $ toLists $ setElem t (y + 1, x + 1) $ fromLists rows
 
