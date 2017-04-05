@@ -2,7 +2,6 @@ module TestHelpers
     ( RiggedDie(..)
     , allDirections
     , boardCounterexample
-    , combine
     , arbitraryDie
     , forAllVisibleBoards
     , hasSpaceToMoveLeft
@@ -21,12 +20,6 @@ import           Model
 import           RequestHandling
 
 import           Test.QuickCheck
-
--- QuickCheck
-combine
-    :: Show a
-    => Gen a -> Gen a -> (a -> a -> Property) -> Property
-combine x y f = forAll x $ \n -> forAll y $ \m -> f n m
 
 forAllVisibleBoards :: Testable a => (Board -> a) -> Property
 forAllVisibleBoards f =

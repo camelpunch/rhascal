@@ -12,10 +12,10 @@ main :: IO ()
 main = hspec spec
 
 spec :: Spec
-spec = do
+spec =
   describe "battle between two characters" $ do
     specify "defender is damaged when attacker hits" $ property $ \attacker defender ->
-      combine attackRolls damageRolls $ \attackRoll damageRoll ->
+      forAll attackRolls $ \attackRoll -> forAll damageRolls $ \damageRoll ->
         let attackDie = RiggedDie [attackRoll, 1]
             damageDie = RiggedDie [damageRoll]
             [_, defenderAfter] = battle attackDie damageDie [attacker, defender]
