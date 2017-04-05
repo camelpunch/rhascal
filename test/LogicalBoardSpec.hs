@@ -53,6 +53,6 @@ spec = do
           totalTiles = (width b - 2) * (height b - 2)
       in  count isEmptyTile b === totalTiles
 
-  specify "a player can be spawned" $ property $ \g ->
+  specify "a character can be spawned" $ property $ \g ->
     forAllVisibleBoards $ \b ->
-      count isPlayer (spawn g player b) === 1
+      count (== (Grass $ Just player)) (spawn g player b) === 1
