@@ -21,9 +21,9 @@ main = do
 loop :: Game -> IO ()
 loop (Game []) = do
   g <- getStdGen
-  clearScreen
-  let board = generateBoard g w h
+  let board = spawnPlayer g $ generateBoard w h
       game = Game [board]
+  clearScreen
   setCursorPosition 0 0
   print board
   printTurns [board]

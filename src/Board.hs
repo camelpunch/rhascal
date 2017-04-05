@@ -1,5 +1,6 @@
 module Board
   ( generateBoard
+  , spawnPlayer
   , count
   , width
   , height
@@ -10,12 +11,13 @@ module Board
   ) where
 
 import           Data.List
+import           Data.Matrix   (fromLists, setElem, toLists)
 import           System.Random
 
 import           Model
 
-generateBoard :: StdGen -> Int -> Int -> Board
-generateBoard g w h = Board generateRows where
+generateBoard :: Int -> Int -> Board
+generateBoard w h = Board generateRows where
 
   generateRows
     | internal w >= 1 && internal h >= 1
@@ -25,28 +27,30 @@ generateBoard g w h = Board generateRows where
 
   horzWall = replicate w Wall
 
-  rows = map row [1 .. internal h]
+  rows = map (const row) [1 .. internal h]
 
-  row y = [Wall] ++ internalRow y ++ [Wall]
+  row = [Wall] ++ internalRow ++ [Wall]
 
-  internalRow y = take (internal w) (rowItems y)
+  internalRow = replicate (internal w) $ Grass Nothing
 
-  rowItems y = map newTile [1..] where
-    newTile x
-      | (x, y) == playerCoords
-      = Grass (Just newPlayer)
-      | otherwise
-      = Grass Nothing
+spawnPlayer :: StdGen -> Board -> Board
+spawnPlayer _ b@(Board [_]) = b
+spawnPlayer _ b@(Board ([_]:_)) = b
+spawnPlayer g b = setTile playerTile (x, y) b where
+  (x, g') = randomR (1, internal $ width b) g
+  (y, _)  = randomR (1, internal $ height b) g'
 
-  playerCoords = (x, y) where
-    (x, g') = randomR (1, internal w) g
-    (y, _g) = randomR (1, internal h) g'
+  playerTile = Grass $
+    Just Character { piece = Piece '@'
+                   , hitPoints = 1
+                   , armourClass = 1}
 
-  newPlayer = Character { piece = Piece '@'
-                        , hitPoints = 1
-                        , armourClass = 1}
+setTile :: Tile -> (Int, Int) -> Board -> Board
+setTile t (x, y) (Board rows) =
+  Board $ toLists $ setElem t (y + 1, x + 1) $ fromLists rows
 
-  internal = subtract 2
+internal :: Int -> Int
+internal = subtract 2
 
 count :: (Tile -> Bool) -> Board -> Int
 count f = length . filter f . tiles

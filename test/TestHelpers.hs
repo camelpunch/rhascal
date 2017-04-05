@@ -21,7 +21,6 @@ import           Dice
 import           Model
 import           RequestHandling
 
-import           System.Random
 import           Test.QuickCheck
 
 -- QuickCheck
@@ -32,11 +31,9 @@ combine x y f = forAll x $ \n -> forAll y $ \m -> f n m
 
 forAllVisibleBoards :: Testable a => (Board -> a) -> Property
 forAllVisibleBoards f =
-    forAll (choose (1, 1000)) $ \seed ->
-        forAll (choose (3, 50)) $ \w ->
-            forAll (choose (3, 50)) $ \h ->
-                let g = mkStdGen seed
-                in f $ generateBoard g w h
+  forAll (choose (3, 50)) $ \w ->
+    forAll (choose (3, 50)) $ \h ->
+      f $ generateBoard w h
 
 -- Board
 boardCounterexample :: Board -> Board -> Property -> Property

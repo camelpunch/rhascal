@@ -52,6 +52,6 @@ spec = do
 
 numChanged :: StdGen -> Int -> Int -> Request -> Int
 numChanged g w h direction =
-  let bef = generateBoard g w h
+  let bef = spawnPlayer g $ generateBoard w h
       aft = nextTurn direction bef
   in  length (catMaybes $ changedRows bef aft)
