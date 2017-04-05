@@ -30,22 +30,22 @@ forAllVisibleBoards f =
 -- Board
 boardCounterexample :: Board -> Board -> Property -> Property
 boardCounterexample before after =
-    counterexample $
-    "\nBEFORE\n\n" ++ show before ++ "\nAFTER\n\n" ++ show after
+  counterexample $
+  "\nBEFORE\n\n" ++ show before ++ "\nAFTER\n\n" ++ show after
 
 allDirections :: Board -> Board
 allDirections =
-    nextTurn MoveDown . nextTurn MoveUp . nextTurn MoveRight . nextTurn MoveLeft
+  nextTurn MoveDown . nextTurn MoveUp . nextTurn MoveRight . nextTurn MoveLeft
 
 hasSpaceToMoveLeft :: Board -> Bool
 hasSpaceToMoveLeft board@(Board beforeTiles) =
-    visibleBoard (width board) (height board) &&
-    beforeTiles !! playerY board !! (playerX board - 1) == Grass Nothing
+  visibleBoard (width board) (height board) &&
+  beforeTiles !! playerY board !! (playerX board - 1) == Grass Nothing
 
 hasSpaceToMoveUp :: Board -> Bool
 hasSpaceToMoveUp board@(Board beforeTiles) =
-    visibleBoard (width board) (height board) &&
-    beforeTiles !! (playerY board - 1) !! playerX board == Grass Nothing
+  visibleBoard (width board) (height board) &&
+  beforeTiles !! (playerY board - 1) !! playerX board == Grass Nothing
 
 playerX :: Board -> Int
 playerX = fst . playerCoords
@@ -70,10 +70,10 @@ tilesWithCoords (Board b) = zipWith rowWithCoords [0 ..] b
 
 -- Dice
 newtype RiggedDie =
-    RiggedDie [Roll]
+  RiggedDie [Roll]
 
 instance Die RiggedDie where
-    rollsOf (RiggedDie ns) = ns
+  rollsOf (RiggedDie ns) = ns
 
 arbitraryDie :: [Positive Roll] -> RiggedDie
 arbitraryDie rolls = RiggedDie $ map getPositive rolls
