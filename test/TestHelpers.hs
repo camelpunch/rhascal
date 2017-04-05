@@ -27,7 +27,6 @@ forAllVisibleBoards f =
     forAll (choose (3, 50)) $ \h ->
       f $ generateBoard w h
 
--- Board
 boardCounterexample :: Board -> Board -> Property -> Property
 boardCounterexample before after =
   counterexample $
@@ -68,7 +67,6 @@ tilesWithCoords (Board b) = zipWith rowWithCoords [0 ..] b
     rowWithCoords y = zipWith (tileWithCoords y) [0 ..]
     tileWithCoords y x tile = ((x, y), tile)
 
--- Dice
 newtype RiggedDie =
   RiggedDie [Roll]
 
