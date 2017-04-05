@@ -1,6 +1,7 @@
 module Main where
 
 import           Data.Foldable
+import           Data.Function
 import           System.Console.ANSI
 import           System.IO
 import           System.Random
@@ -21,7 +22,8 @@ main = do
 loop :: Game -> IO ()
 loop (Game []) = do
   g <- getStdGen
-  let board = spawn g player $ generateBoard w h
+  let board = generateBoard w h &
+              spawn g player
       game = Game [board]
   clearScreen
   setCursorPosition 0 0
@@ -32,9 +34,9 @@ loop (Game []) = do
     w = 80
     h = 20
 loop (Game turns@(previousTurn:_)) =
-  getChar >>= maybe ignore process . requestFromKey
-  where
+  getChar >>= maybe ignore process . requestFromKey where
     ignore = loop $ Game turns
+
     process request = do
       setCursorPosition 0 0
       printChanges $ changedRows previousTurn newTurn
@@ -43,9 +45,7 @@ loop (Game turns@(previousTurn:_)) =
       where
         newTurn = nextTurn request previousTurn
 
-printChanges :: [Maybe [Tile]] -> IO ()
-printChanges = traverse_ $ maybe skipRow printRow
-  where
+    printChanges = traverse_ $ maybe skipRow printRow
     skipRow = cursorDownLine 1
     printRow = putStrLn . showRow
 
