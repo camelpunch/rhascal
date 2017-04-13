@@ -86,7 +86,7 @@ down :: (Character -> Bool) -> Board -> Board
 down f (Board rows) = Board $ (transpose . map (moveForwardOnAxis f) . transpose) rows
 
 moveBackOnAxis :: (Character -> Bool) -> [Tile] -> [Tile]
-moveBackOnAxis f xs =
+moveBackOnAxis isCharacter xs =
   case xs of
     []      -> xs
     [_]     -> xs
@@ -95,20 +95,21 @@ moveBackOnAxis f xs =
     moveBack processed first second rest =
       case (first, second) of
         (_, Wall)                       -> stop
-        (Wall, Grass (Just c))          -> if f c then stop else nextPair
-        (Grass (Just c), Grass _)       -> if f c then stop else nextPair
+        (Wall, Grass (Just c))          -> ifCharacter stop c
+        (Grass (Just c), Grass _)       -> ifCharacter stop c
         (Wall, Grass Nothing)           -> nextPair
         (Grass Nothing, Grass Nothing)  -> nextPair
-        (Grass Nothing, Grass (Just c)) -> if f c then swap else nextPair
-        where
-          stop = processed ++ (first:second:rest)
-          swap = processed ++ (second:first:rest)
-          recur = moveBack (processed ++ [first]) second
-          nextPair =
-            case rest of
-              []                  -> stop
-              [_]                 -> stop
-              (newSecond:newRest) -> recur newSecond newRest
+        (Grass Nothing, Grass (Just c)) -> ifCharacter swap c
+      where
+        ifCharacter act c = if isCharacter c then act else nextPair
+        stop = processed ++ (first:second:rest)
+        swap = processed ++ (second:first:rest)
+        recur = moveBack (processed ++ [first]) second
+        nextPair =
+          case rest of
+            []                  -> stop
+            [_]                 -> stop
+            (newSecond:newRest) -> recur newSecond newRest
 
 moveForwardOnAxis :: (Character -> Bool) -> [Tile] -> [Tile]
 moveForwardOnAxis f = reverse . moveBackOnAxis f . reverse
