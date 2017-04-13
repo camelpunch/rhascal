@@ -11,7 +11,6 @@ import           TestHelpers
 import           Board
 import           Display
 import           Model
-import           RequestHandling
 
 main :: IO ()
 main = hspec spec
@@ -28,7 +27,7 @@ spec = do
           , [Grass Nothing, Grass (Just player)]
           , [Grass Nothing, Grass Nothing]
           ]
-        aft = nextTurn MoveDown bef
+        aft = boardNextTurn MoveDown bef
     in  changedRows bef aft === [ Nothing
                                 , Just [Grass Nothing, Grass Nothing]
                                 , Just [Grass Nothing, Grass (Just player)]
@@ -48,5 +47,5 @@ spec = do
 numChanged :: StdGen -> Int -> Int -> Request -> Int
 numChanged g w h direction =
   let bef = spawn g player $ createBoard w h
-      aft = nextTurn direction bef
+      aft = boardNextTurn direction bef
   in  length (catMaybes $ changedRows bef aft)

@@ -2,6 +2,7 @@ module TestHelpers
   ( RiggedDie(..)
   , allDirections
   , boardCounterexample
+  , boardNextTurn
   , arbitraryDie
   , forAllVisibleBoards
   , hasSpaceToMoveLeft
@@ -32,7 +33,10 @@ boardCounterexample before after =
   counterexample $
   "\nBEFORE\n\n" ++ show before ++ "\nAFTER\n\n" ++ show after
 
-allDirections :: Board -> Board
+boardNextTurn :: Request -> Board -> Board
+boardNextTurn req b = boardAfter $ nextTurn req (initialTurn b)
+
+allDirections :: Turn -> Turn
 allDirections =
   nextTurn MoveDown . nextTurn MoveUp . nextTurn MoveRight . nextTurn MoveLeft
 

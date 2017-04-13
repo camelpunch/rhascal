@@ -6,12 +6,15 @@ module Model
     , HitPoints
     , Piece(..)
     , Point
-    , Game(..)
+    , Game
+    , Turn(..)
+    , TurnResult(..)
     , Board(..)
     , Tile(..)
     , Request(..)
     , player
     , showRow
+    , initialTurn
     ) where
 
 newtype Piece = Piece Char
@@ -30,7 +33,15 @@ data Character = Character
   , armourClass :: ArmourClass
   } deriving (Eq, Show)
 
-newtype Game = Game [Board]
+type Game = [Turn]
+data Turn = Turn
+  { boardAfter :: Board
+  , turnResult :: TurnResult
+  }
+data TurnResult
+  = NewGame
+  | Movement
+  | NoChange
 newtype Board = Board [[Tile]] deriving (Eq)
 
 instance Show Board where
@@ -54,6 +65,9 @@ player :: Character
 player = Character { piece = Piece '@'
                    , hitPoints = 1
                    , armourClass = 1}
+
+initialTurn :: Board -> Turn
+initialTurn b = Turn b NewGame
 
 showRow :: [Tile] -> String
 showRow = map tile2char

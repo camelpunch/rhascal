@@ -6,7 +6,6 @@ import           Test.QuickCheck
 
 import           Board
 import           Combat
-import           RequestHandling
 
 import           ArbitraryTypes  ()
 import           TestHelpers
@@ -20,7 +19,7 @@ spec =
     specify "movement in every direction ends back at start" $
       property $ \g -> forAllVisibleBoards $ \b ->
         let bef = spawn g player b
-            aft = allDirections bef
+            aft = boardAfter $ allDirections (initialTurn bef)
         in  hasSpaceToMoveLeft bef && hasSpaceToMoveUp bef ==>
             bef === aft
 
@@ -32,12 +31,12 @@ spec =
           bef = createBoard w h &
                 spawn g player &
                 spawn g' jackal
-          aft = nextTurn MoveLeft bef
+          aft = boardNextTurn MoveLeft bef
       in  boardCounterexample bef aft $ hasSpaceToMoveLeft bef ==>
           playerX aft === playerX bef - 1
 
     specify "moving up moves player up" $ property $ \g (Positive w) (Positive h) ->
       let bef = spawn g player $ createBoard w h
-          aft = nextTurn MoveUp bef
+          aft = boardNextTurn MoveUp bef
       in  boardCounterexample bef aft $ hasSpaceToMoveUp bef ==>
           playerY aft === playerY bef - 1
