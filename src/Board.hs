@@ -1,5 +1,5 @@
 module Board
-  ( generateBoard
+  ( createBoard
   , spawn
   , count
   , width
@@ -17,8 +17,8 @@ import           System.Random
 
 import           Model
 
-generateBoard :: Int -> Int -> Board
-generateBoard w h = Board generateRows where
+createBoard :: Int -> Int -> Board
+createBoard w h = Board generateRows where
 
   generateRows
     | internal w >= 1 && internal h >= 1

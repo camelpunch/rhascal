@@ -23,7 +23,7 @@ loop :: Game -> IO ()
 loop (Game []) = do
   g <- getStdGen
   let g' = snd $ next g
-      board = generateBoard w h &
+      board = createBoard w h &
               spawn g player &
               spawn g' Character { piece = Piece 'j'
                                  , hitPoints = 1

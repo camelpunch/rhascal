@@ -25,7 +25,7 @@ forAllVisibleBoards :: Testable a => (Board -> a) -> Property
 forAllVisibleBoards f =
   forAll (choose (3, 50)) $ \w ->
     forAll (choose (3, 50)) $ \h ->
-      f $ generateBoard w h
+      f $ createBoard w h
 
 boardCounterexample :: Board -> Board -> Property -> Property
 boardCounterexample before after =

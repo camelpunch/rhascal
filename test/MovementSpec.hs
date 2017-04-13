@@ -29,7 +29,7 @@ spec =
                              , hitPoints = 100
                              , armourClass = 100
                              }
-          bef = generateBoard w h &
+          bef = createBoard w h &
                 spawn g player &
                 spawn g' jackal
           aft = nextTurn MoveLeft bef
@@ -37,7 +37,7 @@ spec =
           playerX aft === playerX bef - 1
 
     specify "moving up moves player up" $ property $ \g (Positive w) (Positive h) ->
-      let bef = spawn g player $ generateBoard w h
+      let bef = spawn g player $ createBoard w h
           aft = nextTurn MoveUp bef
       in  boardCounterexample bef aft $ hasSpaceToMoveUp bef ==>
           playerY aft === playerY bef - 1
