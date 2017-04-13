@@ -45,18 +45,13 @@ spec = do
         wall = replicate h Wall
     in  firstColumn === wall .&&. lastColumn === wall
 
-  specify "all tiles start empty" $
+  specify "all non-wall tiles start empty" $
     forAllVisibleBoards $ \b ->
-      let isEmptyTile tile =
-            case tile of
-              Wall           -> False
-              Grass (Just _) -> False
-              Grass Nothing  -> True
-          totalTiles = (width b - 2) * (height b - 2)
-      in  count isEmptyTile b === totalTiles
+      count (/= Wall) b === count isEmptyTile b
 
   describe "spawning" $ do
-    let numPlayers = count (== (Grass $ Just player))
+    let numPlayers = count (== playerTile)
+        playerTile = Grass $ Just player
         jackal = Character { piece = Piece 'j'
                            , hitPoints = 100
                            , armourClass = 100 }

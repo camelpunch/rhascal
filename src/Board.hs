@@ -8,6 +8,7 @@ module Board
   , right
   , up
   , down
+  , isEmptyTile
   ) where
 
 import           Data.List
@@ -39,12 +40,9 @@ spawn _ _ b@(Board ([_]:_)) = b
 spawn g c b =
   case getTile (x, y) b of
     Wall           -> b
-    Grass (Just _) -> if count isEmpty b > 1 then tryAgain else b
+    Grass (Just _) -> if count isEmptyTile b > 1 then tryAgain else b
     Grass Nothing  -> setTile (Grass $ Just c) (x, y) b
   where
-    isEmpty t = case t of
-      Grass Nothing -> True
-      _             -> False
     (x, g') = randomR (1, internal $ width  b) g
     (y, _ ) = randomR (1, internal $ height b) g'
     tryAgain = spawn (snd $ next g') c b
@@ -56,6 +54,9 @@ getTile (x, y) (Board rows) =
 setTile :: Tile -> Point -> Board -> Board
 setTile t (x, y) (Board rows) =
   Board $ toLists $ setElem t (y + 1, x + 1) $ fromLists rows
+
+isEmptyTile :: Tile -> Bool
+isEmptyTile = (== Grass Nothing)
 
 internal :: Int -> Int
 internal = subtract 2
