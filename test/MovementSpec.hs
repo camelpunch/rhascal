@@ -1,5 +1,6 @@
 module MovementSpec ( main, spec ) where
 
+import           Data.Function
 import           Test.Hspec
 import           Test.QuickCheck
 
@@ -23,8 +24,14 @@ spec =
         in  hasSpaceToMoveLeft bef && hasSpaceToMoveUp bef ==>
             bef === aft
 
-    specify "moving left moves player left" $ property $ \g (Positive w) (Positive h) ->
-      let bef = spawn g player $ generateBoard w h
+    specify "moving left moves player left" $ property $ \g g' (Positive w) (Positive h) ->
+      let jackal = Character { piece = Piece 'j'
+                             , hitPoints = 100
+                             , armourClass = 100
+                             }
+          bef = generateBoard w h &
+                spawn g player &
+                spawn g' jackal
           aft = nextTurn MoveLeft bef
       in  boardCounterexample bef aft $ hasSpaceToMoveLeft bef ==>
           playerX aft === playerX bef - 1

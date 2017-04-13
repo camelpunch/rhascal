@@ -39,12 +39,15 @@ spawn _ _ b@(Board ([_]:_)) = b
 spawn g c b =
   case getTile (x, y) b of
     Wall           -> b
-    Grass (Just _) -> tryAgain
+    Grass (Just _) -> if count isEmpty b > 1 then tryAgain else b
     Grass Nothing  -> setTile (Grass $ Just c) (x, y) b
   where
+    isEmpty t = case t of
+      Grass Nothing -> True
+      _             -> False
     (x, g') = randomR (1, internal $ width  b) g
     (y, _ ) = randomR (1, internal $ height b) g'
-    tryAgain = spawn (snd $ next g) c b
+    tryAgain = spawn (snd $ next g') c b
 
 getTile :: Point -> Board -> Tile
 getTile (x, y) (Board rows) =
@@ -91,8 +94,8 @@ moveBackOnAxis f xs =
     moveBack processed first second rest =
       case (first, second) of
         (_, Wall)                       -> stop
-        (Wall, Grass (Just _))          -> stop
-        (Grass (Just _), Grass _)       -> stop
+        (Wall, Grass (Just c))          -> if f c then stop else nextPair
+        (Grass (Just c), Grass _)       -> if f c then stop else nextPair
         (Wall, Grass Nothing)           -> nextPair
         (Grass Nothing, Grass Nothing)  -> nextPair
         (Grass Nothing, Grass (Just c)) -> if f c then swap else nextPair

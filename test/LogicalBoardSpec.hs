@@ -57,6 +57,9 @@ spec = do
 
   describe "spawning" $ do
     let numPlayers = count (== (Grass $ Just player))
+        jackal = Character { piece = Piece 'j'
+                           , hitPoints = 100
+                           , armourClass = 100 }
 
     specify "a character can be spawned" $
       property $ \g -> forAllVisibleBoards $ \b ->
@@ -64,4 +67,4 @@ spec = do
 
     specify "characters are never spawned on top of each other" $
       property $ \g g' -> forAllVisibleBoards $ \b ->
-        numPlayers (b & spawn g player & spawn g' player) === 2
+        numPlayers (b & spawn g player & spawn g' jackal) === 1

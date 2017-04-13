@@ -55,11 +55,10 @@ playerY = snd . playerCoords
 playerCoords :: Board -> Point
 playerCoords b = (x, y)
   where
-    (((x, y), _):_) = (filter isCharacter . concat . tilesWithCoords) b
-
-isCharacter :: (Point, Tile) -> Bool
-isCharacter (_, Grass (Just _)) = True
-isCharacter _                   = False
+    (((x, y), _):_) = (filter isPlayer . concat . tilesWithCoords) b
+    isPlayer (_, Grass (Just ch)) = piece ch == piece player
+    isPlayer (_, Grass Nothing)   = False
+    isPlayer (_, Wall)            = False
 
 tilesWithCoords :: Board -> [[(Point, Tile)]]
 tilesWithCoords (Board b) = zipWith rowWithCoords [0 ..] b
